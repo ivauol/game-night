@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
+	kotlin("plugin.spring") version "1.9.25"
+    id("org.springframework.boot") version "3.5.11"
+	id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "com.example"
@@ -15,6 +18,7 @@ kotlin {
 }
 
 dependencies {
+
     implementation("io.ktor:ktor-server-pebble:3.4.0")
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
@@ -23,5 +27,11 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("org.springframework.security:spring-security-crypto")
 
 }

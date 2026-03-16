@@ -20,4 +20,5 @@ fun Application.configureRouting(){
 
 private suspend fun ApplicationCall.displayForm(){
     respondTemplate("base.peb", model= emptyMap<String, String>())
+    
 }
