@@ -66,7 +66,7 @@ class Game(val black: Player, val white: Player, var current: String = "black", 
         }
     }
     //convert the board into a string to track threefold repetition
-    fun boardString(){
+    fun boardString() : String{
         var string = ""
         for (x in 0..7){
             for (y in 0..7){
