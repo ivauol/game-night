@@ -12,7 +12,8 @@ import io.ktor.server.request.*
 fun Application.configureRouting() {
     routing {
         get("/") {
-            call.displayHome()
+            //call.displayHome()
+            call.displayBoard()
             call.respondText("Hello World!")
         }
     }
@@ -20,4 +21,8 @@ fun Application.configureRouting() {
  
 private suspend fun ApplicationCall.displayHome() {
     respondTemplate("base.peb", model=emptyMap())
+}
+
+private suspend fun ApplicationCall.displayBoard() {
+    respondTemplate("board.peb", model=emptyMap())
 }
