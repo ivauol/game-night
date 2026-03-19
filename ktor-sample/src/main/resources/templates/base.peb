@@ -9,7 +9,6 @@
 </head>
 <body>
 <main>
-    <h1>Hello World!</h1>
     {% block content %}{% endblock %}
 </main>
 </body>

@@ -1,0 +1,6 @@
+{% extends "base.peb" %}
+{% block content %}
+
+<h1>I am displaying a board</h1>
+
+{% endblock %}
