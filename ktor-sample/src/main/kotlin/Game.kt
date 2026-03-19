@@ -1,6 +1,8 @@
-class Game(val black: Player, val white: Player, var current: String = "black", var boardString: String, var history: MutableMap<String, Int> = mutableMapOf<String, Int>()){
+class Game(val black: Player, val white: Player, var current: String = "black", var boardState: String, var history: MutableMap<String, Int> = mutableMapOf<String, Int>()){
+    var board: Array<Array<Piece?>>
     init {
-        this.createBoard(BoardString)
+        board = Array(8){ arrayofNulls<Piece>(8) }
+        this.createBoard()
     }
 
     //to play a game of checkers
@@ -21,15 +23,15 @@ class Game(val black: Player, val white: Player, var current: String = "black", 
                 noCapture += 1
             }
             //if the same board state has been repeated 3 times
-            val hash = boardString()
-            this.history[hash] = this.history.getOrDefault(hash, 0) + 1
+            boardString()
+            this.history[this.boardState] = this.history.getOrDefault(this.boardState, 0) + 1
             if (this.current == "black") {
                 win = this.winCheck(this.black)
             }
             else{
                 win = this.winCheck(this.white)
             }
-            finished = (win != "") || (noCapture >= 25) || (this.history[hash]!! >= 3)
+            finished = (win != "") || (noCapture >= 25) || (this.history[this.boardState]!! >= 3)
         }
         //declare winner or draw
         if (win == "white"){
@@ -45,20 +47,19 @@ class Game(val black: Player, val white: Player, var current: String = "black", 
     }
 
     //turn the board string into a board
-    fun createBoard(boardString: String){
-        this.board = arrayOf(2){arrayofNulls(8)}
+    fun createBoard(){
         for (x in 0..7){
             for (y in 0..7){
-                if (this.boardString[8*x + y] == "B"){
+                if (this.boardState[8*x + y] == 'B'){
                     this.board[x][y] = Piece("black", king = true)
                 }
-                if (this.boardString[8*x + y] == "W"){
+                if (this.boardState[8*x + y] == 'W'){
                     this.board[x][y] = Piece("white", king = true)
                 }
-                if (this.boardString[8*x + y] == "b"){
+                if (this.boardState[8*x + y] == 'b'){
                     this.board[x][y] = Piece("black")
                 }
-                if (this.boardString[8*x + y] == "w"){
+                if (this.boardState[8*x + y] == 'w'){
                     this.board[x][y] = Piece("white")
                 }
             }
@@ -92,7 +93,7 @@ class Game(val black: Player, val white: Player, var current: String = "black", 
             }
         }
         string += this.current[0]
-        this.boardString = string
+        this.boardState = string
     }
 
     //display the current board
