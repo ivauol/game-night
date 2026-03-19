@@ -1,7 +1,7 @@
 class Game(val black: Player, val white: Player, var current: String = "black", var boardState: String, var history: MutableMap<String, Int> = mutableMapOf<String, Int>()){
     var board: Array<Array<Piece?>>
     init {
-        board = Array(8){ arrayofNulls<Piece>(8) }
+        board = Array(8){ Array<Piece?>(8) {null} }
         this.createBoard()
     }
 
