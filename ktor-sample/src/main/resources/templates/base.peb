@@ -10,8 +10,7 @@
 <body>
 <main>
     <h1>Hello World!</h1>
-    {% block content %}
-    {% endblock %}
+    {% block content %}{% endblock %}
 </main>
 </body>
 </html>
