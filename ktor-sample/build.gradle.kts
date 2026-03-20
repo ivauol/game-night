@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
+    kotlin("plugin.serialization") version "1.9.10"
 }
 
 group = "com.example"
@@ -22,7 +23,6 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.logback.classic)
-    implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.config.yaml)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
@@ -44,4 +44,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:dataframe:1.0.0-Beta4")
     implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0")
     testImplementation("io.ktor:ktor-server-test-host")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
