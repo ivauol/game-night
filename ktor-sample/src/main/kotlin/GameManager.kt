@@ -1,3 +1,5 @@
+package com.example
+
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.pebble.*
@@ -15,14 +17,12 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.id.EntityID
 
-import com.example.Games
-
 class GameManager(){
     //make a move in a game
-    fun makeMove(game_id: Int, player_id: Int, move: MutableList<Array<Int>>){
+    fun makeMove(game_id: Int, player_id: Int, move: MutableList<Array<Int>>): MoveResponse{
         var game = this.createGame(game_id, player_id)
         //if game doesn't exist
-        if (game == null){return}
+        if (game == null){return MoveResponse(false, "Game not found")}
         //decide what player colour sent the move
         var playerColour = ""
         if (game.black_id == player_id){
@@ -32,31 +32,33 @@ class GameManager(){
             playerColour = "white"
         }
         //if the wrong player made a move
-        if (game.current != playerColour){return}
+        if (game.current != playerColour){return MoveResponse(false, "Not your turn")}
         //if an invalid move is played
-        if (!game.validateMove(move, playerColour)){return}
+        if (!game.validateMove(move, playerColour)){return MoveResponse(false, "Invalid move")}
         game.makeMove(move)
         this.updateGame(game, game_id)
+        saveToCSV()
+        return MoveResponse(true, "Move successful", game.boardState)
     }
 
     //to load a game from the database and turn it into a Game object
     fun createGame(game_id: Int, player_id: Int): Game?{
         return transaction {
             //select the game with the right id and ensure the player is in the game
-            val query = Games.select(
-                (Games.id eq game_id) and
-                ((Games.black_id eq player_id) or (Games.white_id eq player_id))
-            ).firstOrNull()
+            val query = Games.selectAll()
+            .firstOrNull{(it[Games.id].value == game_id) && (it[Games.black_id].value == player_id || it[Games.white_id].value == player_id)}
+            if (query == null){return@transaction null}
 
-            query?.let {
-                //turn the history string into a JSON
-                val historyMap: MutableMap<String, Int> = it[Games.history]
-                ?.takeIf { it.isNotEmpty() }
+            //convert the string in the database to a Json object, then to a mutable map
+            val historyJson = query[Games.history]
+            val historyMap: MutableMap<String, Int> = historyJson
+                .takeIf { it.isNotEmpty() }
+                ?.replace("$", "\"")
+                ?.replace("£", ",")
                 ?.let { Json.decodeFromString(it) }
                 ?: mutableMapOf()
 
-                Game(it[Games.black_id].value, it[Games.white_id].value, it[Games.current], it[Games.board], historyMap)
-            }
+            Game(query[Games.black_id].value, query[Games.white_id].value, query[Games.current], query[Games.board], historyMap)
         }
     }
 

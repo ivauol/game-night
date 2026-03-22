@@ -1,3 +1,5 @@
+package com.example
+
 class Game(val black_id: Int, val white_id: Int, var current: String = "black", var boardState: String, var history: MutableMap<String, Int> = mutableMapOf<String, Int>()){
     var board: Array<Array<Piece?>>
     init {
@@ -31,7 +33,7 @@ class Game(val black_id: Int, val white_id: Int, var current: String = "black", 
             for (y in 0..7){
                 val piece = this.board[x][y]
                 if (piece == null){
-                    string += " "
+                    string += "."
                 }
                 else if (piece.colour == "white"){
                     if (piece.king){

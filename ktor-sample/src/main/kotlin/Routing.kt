@@ -10,14 +10,66 @@ import io.ktor.server.request.receiveParameters
 
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*
+import io.ktor.http.*
 
+import io.ktor.server.pebble.*
+import io.ktor.server.response.*
 
 fun Application.configureRouting() {
+    val gameManager = GameManager()
     routing {
         get("/") {
             //call.displayHome()
             call.displayBoard()
             call.respondText("Hello World!")
+        }
+
+        //load the game
+        get("/game"){
+            //test ids
+            val gameId = 1
+            val playerId = 2
+
+            //make the game
+            val game = gameManager.createGame(gameId, playerId)
+            if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
+
+            //create a 2d array of strings for the board
+            val board2D = Array(8) { x ->
+                Array(8) { y ->
+                    game.board[x][y]?.let {
+                        if (it.king) it.colour[0].uppercase() else it.colour[0].lowercase()
+                    } ?: " "
+                }.toList()
+            }.toList()
+
+            call.respond(PebbleContent("test.peb", mapOf("board" to board2D, "game_id" to gameId, "player_id" to playerId)))
+        }
+
+        //to make a move on a board
+        post("/move"){
+            //get the values required
+            val params = call.receiveParameters()
+            val gameId = params["game_id"]?.toIntOrNull() ?: return@post call.respondText("Invalid game_id")
+            val playerId = params["player_id"]?.toIntOrNull() ?: return@post call.respondText("Invalid player_id")
+            val moveInput = params["move"] ?: return@post call.respondText("Move not provided")
+
+            //convert from standard move notation to a list of positions
+            val moveList = moveInput.split(",").map { square ->
+                val col = square[0] - 'A'
+                val row = square[1].digitToInt() - 1
+                println(arrayOf(row, col).contentToString())
+                arrayOf(row, col)
+            }.toMutableList()
+
+            val response = GameManager().makeMove(gameId, playerId, moveList)
+
+            //reload the board if a success
+            if (response.success) {
+                call.respondRedirect("/game")
+            } else {
+                call.respondText(response.message)
+            }
         }
     }
 }
