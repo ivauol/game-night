@@ -27,8 +27,8 @@ fun Application.configureRouting() {
         //load the game
         get("/game"){
             //test ids
-            val gameId = 1
-            val playerId = 2
+            val gameId = 3
+            val playerId = 1
 
             //make the game
             val game = gameManager.createGame(gameId, playerId)
@@ -58,7 +58,6 @@ fun Application.configureRouting() {
             val moveList = moveInput.split(",").map { square ->
                 val col = square[0] - 'A'
                 val row = square[1].digitToInt() - 1
-                println(arrayOf(row, col).contentToString())
                 arrayOf(row, col)
             }.toMutableList()
 

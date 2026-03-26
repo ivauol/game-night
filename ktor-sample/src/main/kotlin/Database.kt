@@ -44,13 +44,6 @@ fun Application.configureDatabase() {
                 it[winner_id] = record.winner_id?.let{EntityID(it, Users)}
             }
         }
-        println("\nGAMES:")
-        Games.selectAll().forEach { row ->
-            println(
-                "id=${row[Games.id].value}, black_id=${row[Games.black_id].value}, white_id=${row[Games.white_id].value}, " +
-                "board='${row[Games.board]}', history='${row[Games.history]}', current='${row[Games.current]}'"
-            )
-        }
     }
 }
 
