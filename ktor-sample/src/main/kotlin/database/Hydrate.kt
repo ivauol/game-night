@@ -2,7 +2,7 @@ package com.example
 
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.rows
-import org.jetbrains.kotlinx.dataframe.io.readCSV
+import org.jetbrains.kotlinx.dataframe.io.readCsv
 
 //game layout
 data class GameRecord(
@@ -31,8 +31,8 @@ fun Any?.parseCell(): String? = this?.toString()?.trim()?.takeIf { it.isNotEmpty
 
 //get all games from the CSV
 fun hydrateGames(): List<GameRecord> {
-    val filePath = "src/main/resources/templates/games.csv"
-    val df = DataFrame.readCSV(filePath)
+    val filePath = "src/main/resources/data/games.csv"
+    val df = DataFrame.readCsv(filePath)
     //get all the existing games
     val grouped = df.rows()
         .map { row ->
@@ -55,8 +55,8 @@ fun hydrateGames(): List<GameRecord> {
 
 //get all users from the CSV
 fun hydrateUsers(): List<UserRecord> {
-    val filePath = "src/main/resources/templates/users.csv"
-    val df = DataFrame.readCSV(filePath)
+    val filePath = "src/main/resources/data/users.csv"
+    val df = DataFrame.readCsv(filePath)
     //get all existing users
     val grouped = df.rows()
         .map { row ->

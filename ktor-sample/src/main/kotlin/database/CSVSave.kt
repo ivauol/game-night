@@ -10,7 +10,7 @@ fun saveToCSV() {
     val games = transaction { Games.selectAll().toList() }
 
     val header = "game_id,black_id,white_id,board,history,current,start_time,end_time,status,winner_id"
-    val file = File("src/main/resources/templates/games.csv")
+    val file = File("src/main/resources/data/games.csv")
     file.printWriter().use { out ->
         out.println(header)
         //write each game line by line

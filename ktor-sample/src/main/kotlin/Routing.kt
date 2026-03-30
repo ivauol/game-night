@@ -4,16 +4,37 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.pebble.respondTemplate
-
 import io.ktor.http.Parameters
 import io.ktor.server.request.receiveParameters
+import io.ktor.http.HttpStatusCode
+import io.ktor.websocket.*
+import io.ktor.server.websocket.*
 
-import io.ktor.server.http.content.*
-import io.ktor.server.request.*
-import io.ktor.http.*
+//store all online players for syncing
+object WSConnections {
+    private val sessions = mutableMapOf<Int, MutableList<DefaultWebSocketServerSession>>()
 
-import io.ktor.server.pebble.*
-import io.ktor.server.response.*
+    //add a new websocket connection to a game
+    fun add(gameId: Int, session: DefaultWebSocketServerSession) {
+        val list = sessions.getOrPut(gameId) { mutableListOf() }
+        list.add(session)
+    }
+
+    //remove a websocket connection from a game
+    fun remove(gameId: Int, session: DefaultWebSocketServerSession) {
+        sessions[gameId]?.remove(session)
+        if (sessions[gameId]?.isEmpty() == true) {
+            sessions.remove(gameId)
+        }
+    }
+
+    //send a message to all online players in a game
+    suspend fun broadcast(gameId: Int, message: String) {
+        sessions[gameId]?.forEach {
+            it.send(Frame.Text(message))
+        }
+    }
+}
 
 fun Application.configureRouting() {
     val gameManager = GameManager()
@@ -34,24 +55,15 @@ fun Application.configureRouting() {
             val game = gameManager.createGame(gameId, playerId)
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
-            //create a 2d array of strings for the board
-            val board2D = Array(8) { x ->
-                Array(8) { y ->
-                    game.board[x][y]?.let {
-                        if (it.king) it.colour[0].uppercase() else it.colour[0].lowercase()
-                    } ?: " "
-                }.toList()
-            }.toList()
-
-            call.respond(PebbleContent("test.peb", mapOf("board" to board2D, "game_id" to gameId, "player_id" to playerId)))
+            call.respondTemplate("test.peb", mapOf("boardString" to game.boardState, "gameId" to gameId, "playerId" to playerId))
         }
 
         //to make a move on a board
         post("/move"){
             //get the values required
             val params = call.receiveParameters()
-            val gameId = params["game_id"]?.toIntOrNull() ?: return@post call.respondText("Invalid game_id")
-            val playerId = params["player_id"]?.toIntOrNull() ?: return@post call.respondText("Invalid player_id")
+            val gameId = params["gameId"]?.toIntOrNull() ?: return@post call.respondText("Invalid game id")
+            val playerId = params["playerId"]?.toIntOrNull() ?: return@post call.respondText("Invalid player id")
             val moveInput = params["move"] ?: return@post call.respondText("Move not provided")
 
             //convert from standard move notation to a list of positions
@@ -61,13 +73,35 @@ fun Application.configureRouting() {
                 arrayOf(row, col)
             }.toMutableList()
 
-            val response = GameManager().makeMove(gameId, playerId, moveList)
+            val response = gameManager.makeMove(gameId, playerId, moveList)
 
             //reload the board if a success
             if (response.success) {
-                call.respondRedirect("/game")
+                val game = gameManager.createGame(gameId, playerId) ?: return@post call.respond(HttpStatusCode.BadRequest)
+                WSConnections.broadcast(gameId, game.boardState)
+                call.respond(HttpStatusCode.OK)
             } else {
                 call.respondText(response.message)
+            }
+        }
+
+        //set up the websocket for sync between players
+        webSocket("/ws/{gameId}") {
+            val gameId = call.parameters["gameId"]?.toIntOrNull() ?: return@webSocket close(
+                CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Invalid gameId")
+            )
+
+            println("Client connected!")
+            WSConnections.add(gameId, this)
+
+            try {
+                for (frame in incoming) {
+                    // empty as no messages sent by client
+                }
+            }
+            finally {
+                println("Client disconnected!")
+                WSConnections.remove(gameId, this)
             }
         }
     }
