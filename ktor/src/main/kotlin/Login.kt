@@ -1,66 +1,82 @@
-import java.io.File
-import java.io.*
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
+import org.springframework.jdbc.support.GeneratedKeyHolder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.stereotype.Repository
+import java.sql.PreparedStatement
 
+data class UserInfo(
+    val username: String,
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val passwordHash: String
+)
 
-// checking if user is in the database and if so check if their password is correct
+@Repository
+class PersonRepository(
+    private val jdbcTemplate: JdbcTemplate
+) {
+    private val encoder = BCryptPasswordEncoder()
 
-fun readWordList(username: String): MutableList<String> { 
-    var filename= "/workspaces/1860worksheets/year2/final-project/welcome-page/userdatabase" // this would change 
-    var password= MutableList<String>(5) 
-    val Invalid= "username not found"
-
-    File(filename).forEachLine{
-        if (it == username){
-            password.set(it)
-        } 
-
-    if (password.size == 0 ){
-        return Invalid
-    }
-    }      
-    return password 
-}
-
-
-// Registerig a user: adding them to the database 
-
-class Person(val username: String, val password:String, val email: String, val firstName:String, val secondName: String ){
-    
-
-    fun storinguser(firstName: String, secondName:String, email: String,username:String, password:String) {
-        val file = File("userdatabase.txt") // THIS WOULD ALSO NEED TO CHANGE 
-
-        //val line = "$username, $password, $email, $firstName, $secondName \n" 
-        //file.appendText(line)
-        val person = Person(firstName,secondName,email,username,password)
-        File("userdatabase.txt").appendText("${person.username}, ${person.password}, ${person.firstName}, ${person.secondName}, ${person.email}\n")
-
+    private val rowMapper = RowMapper<UserInfo> { rs, _ ->
+        UserInfo(
+            username = rs.getString("username"),
+            firstName = rs.getString("firstName"),
+            lastName = rs.getString("lastName"),
+            email = rs.getString("email"),
+            passwordHash = rs.getString("password_hash")
+        )
     }
 
-    
-    fun authenticate(username:String, password:String):Boolean{
-        var stored_password= readWordList(username)
+    fun findByUsername(username: String): UserInfo? {
+        val sql = """
+            SELECT username, firstName, lastName, email, password_hash
+            FROM userinfo
+            WHERE username = ?
+        """.trimIndent()
 
-        if (stored_password == password){
-            return True 
-        } else {
-            return False 
-        }
-    } // only for when users are already signed up
-
-
-}
-
-// for botton options: when sign in is choosen 
-fun signin() {
-    if (sign-up =True){
-        // user input their information, call storing user to input 
+        return jdbcTemplate.query(sql, rowMapper, username).firstOrNull()
     }
-}
 
-fun main(){
-    var file= String
-    file= "/workspaces/1860worksheets/year2/final-project/welcome-page/userdatabase" //ignore 
+    fun authenticate(username: String, password: String): Boolean {
+        val user = findByUsername(username) ?: return false
+        return encoder.matches(password, user.passwordHash)
+    }
 
+    fun create(
+        username: String,
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String
+    ): Long {
+        val sql = """
+            INSERT INTO userinfo (
+                username,
+                firstName,
+                lastName,
+                email,
+                password_hash
+            ) VALUES (?, ?, ?, ?, ?)
+        """.trimIndent()
 
+        val passwordHash = encoder.encode(password)
+        val keyHolder = GeneratedKeyHolder()
+
+        jdbcTemplate.update({ connection ->
+            val statement: PreparedStatement =
+                connection.prepareStatement(sql, arrayOf("id"))
+
+            statement.setString(1, username)
+            statement.setString(2, firstName)
+            statement.setString(3, lastName)
+            statement.setString(4, email)
+            statement.setString(5, passwordHash)
+            statement
+        }, keyHolder)
+
+        return keyHolder.key?.toLong()
+            ?: error("Failed to create user account")
+    }
 }
