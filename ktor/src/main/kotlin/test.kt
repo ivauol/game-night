@@ -10,11 +10,19 @@ import java.sql.PreparedStatement
 
 /// not recognising springframework - should work after that
 @Repository
-class Person( 
+class PersonRepository( 
     private val jdbcTemplate: JdbcTemplate
-) {
-    private val rowMapper = RowMapper<userinfo> { rs, {it} ->
-        userinfo(
+)
+    data class UserInfo(
+    val username: String,
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val passwordHash: String
+)
+    {
+    private val rowMapper = RowMapper<userinfo> { rs, _ ->
+        UserInfo(
             username = rs.getLong("username"),
             firstName = rs.getString("firstName"),
             lastName = rs.getString("lastName"),
@@ -23,7 +31,7 @@ class Person(
         )
     }
 
-    fun findByUsername(username: String): password? {
+    fun findByUsername(username: String): UserInfo? {
         val sql = """
             SELECT username, firstName, lastName, email, passwordHash
             FROM userinfo
@@ -33,26 +41,19 @@ class Person(
         return jdbcTemplate.query(sql, rowMapper, username).firstOrNull()
     }
 
-    val encoder = BCryptPasswordEncoder()
-    val password= encoder.encode("password")
+    private val encoder = BCryptPasswordEncoder()
 
-
-    fun authenticate(username:String, password:String):Boolean{
-        var stored_password= findByUsername(username)
-
-        if (stored_password == password){
-            return True
-        } else {
-            return False
-        }
-    } 
+    fun authenticate(username: String, password: String): Boolean {
+        val user = findByUsername(username) ?: return false
+        return encoder.matches(password, user.passwordHash)
+    }
 
     fun create(
-        username:username,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        passwordHash: password_hash
+        username: String,
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String
     ): Long {
         val sql = """
             INSERT INTO userinfo (

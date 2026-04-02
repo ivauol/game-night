@@ -28,6 +28,8 @@ dependencies {
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework:spring-jdbc:6.2.5")
+    implementation("org.springframework.security:spring-security-crypto:6.4.4")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
