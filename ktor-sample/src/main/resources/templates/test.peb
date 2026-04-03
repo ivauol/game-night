@@ -1,25 +1,88 @@
-{#Display the board#}
-<div style="display:flex; justify-content:center; margin-top:20px;">
-    <table border="1" cellspacing="0" cellpadding="4">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: blue;
+        text-align: center;
+    }
+
+    .board-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .checkers-board {
+        border-collapse: collapse;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .square {
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .light {
+        background-color: #f0d9b5;
+    }
+
+    .dark {
+        background-color: #b58863;
+    }
+
+    .label {
+        width: 30px;
+        height: 30px;
+        background: #ddd;
+        text-align: center;
+    }
+
+    #moveForm {
+        margin-top: 30px;
+    }
+
+    #move {
+        padding: 8px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 8px 16px;
+        background: #333;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #555;
+    }
+</style>
+
+{# Display the board #}
+<div class="board-container">
+    <table class="checkers-board">
         <tr>
             <td></td>
-            {#column labels#}
             {% for col in ['A','B','C','D','E','F','G','H'] %}
-            <td style="width:20px; height:20px; text-align:center;"><b>{{ col }}</b></td>
+                <td class="label"><b>{{ col }}</b></td>
             {% endfor %}
         </tr>
-        {% for row in [1, 2, 3, 4, 5, 6, 7, 8] %}
+
+        {% for row in [1,2,3,4,5,6,7,8] %}
         <tr>
-            {#row labels#}
-            <td style="text-align:center;"><b>{{ row }}</b></td> {# row label #}
-            {% for col in [1, 2, 3, 4, 5, 6, 7, 8] %}
-            {#initialise all the cells#}
-            <td style="width:20px; height:20px; text-align:center;"></td>
+            <td class="label"><b>{{ row }}</b></td>
+
+            {% for col in [1,2,3,4,5,6,7,8] %}
+                <td class="{% if (row + col) is even %}light{% else %}dark{% endif %} square"></td>
             {% endfor %}
         </tr>
         {% endfor %}
     </table>
 </div>
+
 {#move making option#}
 <form id="moveForm" action="/move" method="post" style="justify-content:center; margin-top:180px;">
     <input type="hidden" name="gameId" value="{{ gameId }}">
