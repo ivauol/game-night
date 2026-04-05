@@ -8,6 +8,7 @@
   <title>{% block title %}Game Night{% endblock %}</title>
 </head>
 <body>
+<h1>welcome page<h1>
 <main>
     {% block content %}{% endblock %}
 </main>

@@ -40,9 +40,13 @@ fun Application.configureRouting() {
     val gameManager = GameManager()
     routing {
         get("/") {
-            //call.displayHome()
+            call.displayHome() //opens the first welcome page 
+            //call.displayBoard()
+            //call.respondText("Hello World!")
+        }
+
+        get("/board"){
             call.displayBoard()
-            call.respondText("Hello World!")
         }
 
         //load the game
@@ -56,6 +60,15 @@ fun Application.configureRouting() {
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
             call.respondTemplate("test.peb", mapOf("boardString" to game.boardState, "gameId" to gameId, "playerId" to playerId))
+        }
+
+        //load the login page 
+        get("/login"){
+            call.displayLogIn()
+        }
+
+        get("/register"){
+            call.displayRegister()
         }
 
         //to make a move on a board
@@ -109,6 +122,14 @@ fun Application.configureRouting() {
  
 private suspend fun ApplicationCall.displayHome() {
     respondTemplate("base.peb", model=emptyMap())
+}
+
+private suspend fun ApplicationCall.displayLogIn(){
+    respondTemplate("login-page.peb", model =emptyMap() ) // link to userdatase
+}
+
+private suspend fun ApplicationCall.displayRegister() {
+    respondTemplate("accountcreate.peb", model= emptyMap()) // link to userdatabase
 }
 
 private suspend fun ApplicationCall.displayBoard() {

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <head>
+        <title>LOG-IN</title>
+    </head>
+
+    <style>
+
+        body {font-family: Arial, Helvetica, sans-serif;}
+        form {border: 3px solid #f1f1f1;}
+
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #141e30, #243b55);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .form-container {
+            background: rgba(27, 7, 92, 0.023);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,255, 255, 0.3);
+            width: 400px;
+            text-align: center;
+            margin: 20px;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 60px); /* leaves room for icon bar */
+        }
+
+        .form-container button{
+            background-color: #0a2b5198;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 25px;
+        }
+
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: large;
+        }
+
+        .icon-bar {
+            width: 100%;
+            background-color: rgba(9, 82, 82, 0.67);
+            overflow: auto;
+        }
+
+        .icon-bar a {
+            float:left;
+            width:20%;
+            text-align: center;
+            padding: 12px 0 ;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 36px;
+        }
+
+        .icon-bar a:hover{
+            background-color: #040404;
+        }
+
+        label{
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            color:white;
+        }
+
+    </style>
+
+    <body>
+        <div class= "icon-bar">
+            <a class="active" href="#"><i class= "fa fa-home"></i> </a>
+        </div>
+        <div class="flex-container">
+            <div class= "form-container">
+                <label for="uname"><b>USERNAME</b></label>
+                <input type="text" placeholder="Enter Username" name="uname" required>
+
+                <label for="psw"><b>PASSWORD</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
+                    
+                <button type="submit">LOGIN</button>
+
+            </div>
+        </div>
+    </body>
+</html>
