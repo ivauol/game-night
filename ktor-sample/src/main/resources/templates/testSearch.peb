@@ -1,0 +1,16 @@
+<body>
+    <ul>
+        {% for game in games %}
+            <li>
+                Game ID: {{ game }}
+                <form action="/join" method="post" style="display:inline;">
+                    <input type="hidden" name="gameId" value="{{ game }}">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <button type="submit">Join Game</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="/">Back to Home</a>
+</body>

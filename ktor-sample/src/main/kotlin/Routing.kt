@@ -9,6 +9,15 @@ import io.ktor.server.request.receiveParameters
 import io.ktor.http.HttpStatusCode
 import io.ktor.websocket.*
 import io.ktor.server.websocket.*
+import io.ktor.server.sessions.*
+import kotlinx.serialization.Serializable
+import io.ktor.util.*
+import java.security.SecureRandom
+
+//store player session
+@Serializable
+data class PlayerSession(val playerId: Int, val gameId: Int)
+val playerSessions = mutableMapOf<String, PlayerSession>()
 
 //store all online players for syncing
 object WSConnections {
@@ -39,31 +48,90 @@ object WSConnections {
 fun Application.configureRouting() {
     val gameManager = GameManager()
     routing {
-        get("/") {
-            //call.displayHome()
-            call.displayBoard()
-            call.respondText("Hello World!")
+        //home page loading
+        get("/"){
+            call.respondTemplate("testHome.peb", mapOf())
+        }
+
+        //search through all games for a specific player
+        get("/search") {
+            //get necessary parameters
+            val token = call.request.queryParameters["token"]
+            ?: return@get call.respondText("No token provided")
+            val session = playerSessions[token]
+            ?: return@get call.respondText("Invalid token")
+
+            //reset the gameId if going back from /game
+            playerSessions[token] = session.copy(gameId = 0)
+
+            val playerId = session.playerId
+            val playerGames = gameManager.getGames(playerId)
+
+            call.respondTemplate(
+                "testSearch.peb",
+                mapOf(
+                    "games" to playerGames,
+                    "token" to token
+                )
+            )
         }
 
         //load the game
         get("/game"){
-            //test ids
-            val gameId = 3
-            val playerId = 1
+            //get necessary parameters
+            val sessionToken = call.request.queryParameters["token"]
+            ?: return@get call.respondText("No token provided")
+            val playerId = playerSessions[sessionToken]?.playerId
+            val gameId = playerSessions[sessionToken]?.gameId
+            if (playerId == null || gameId == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
             //make the game
             val game = gameManager.createGame(gameId, playerId)
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
-            call.respondTemplate("test.peb", mapOf("boardString" to game.boardState, "gameId" to gameId, "playerId" to playerId))
+            call.respondTemplate("test.peb", mapOf("boardString" to game.boardState, "session" to sessionToken))
+        }
+
+        //to set the player for testing
+        post("/player"){
+            //get the player id
+            val params = call.receiveParameters()
+            val playerId = params["playerId"]?.toIntOrNull()
+            ?: return@post call.respondText("Invalid player ID")
+
+            //create a random 32 byte hex value for session
+            val bytes = ByteArray(32)
+            SecureRandom().nextBytes(bytes)
+            val sessionToken = bytes.joinToString("") { "%02x".format(it) }
+            playerSessions[sessionToken] = PlayerSession(playerId, gameId = 0)
+
+            call.respondRedirect("/search?token=$sessionToken")
+        }
+
+        post("/join"){
+            //get necessary values
+            val params = call.receiveParameters()
+            val gameId = params["gameId"]?.toIntOrNull()
+            ?: return@post call.respondText("Invalid game ID")
+            val sessionToken = params["token"]
+            ?: return@post call.respondText("Invalid session token")
+            println(sessionToken)
+
+            //update session so it references the selected game
+            playerSessions[sessionToken] = playerSessions[sessionToken]!!.copy(gameId = gameId)
+            call.respondRedirect("/game?token=$sessionToken")
         }
 
         //to make a move on a board
         post("/move"){
-            //get the values required
+            //get the user session
             val params = call.receiveParameters()
-            val gameId = params["gameId"]?.toIntOrNull() ?: return@post call.respondText("Invalid game id")
-            val playerId = params["playerId"]?.toIntOrNull() ?: return@post call.respondText("Invalid player id")
+            val token = params["token"] ?: return@post call.respondText("No token provided")
+            val session = playerSessions[token] ?: return@post call.respondText("Invalid session")
+
+            //get the values required
+            val gameId = session.gameId
+            val playerId = session.playerId
             val moveInput = params["move"] ?: return@post call.respondText("Move not provided")
 
             //convert from standard move notation to a list of positions
@@ -86,12 +154,17 @@ fun Application.configureRouting() {
         }
 
         //set up the websocket for sync between players
-        webSocket("/ws/{gameId}") {
-            val gameId = call.parameters["gameId"]?.toIntOrNull() ?: return@webSocket close(
-                CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Invalid gameId")
-            )
+        webSocket("/ws") {
+            //get game and player id
+            val token = call.request.queryParameters["token"]
+            ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "No token"))
+            val session = playerSessions[token]
+            ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Invalid token"))
 
-            println("Client connected!")
+            val gameId = session.gameId
+            val playerId = session.playerId
+
+            println("Player $playerId connected to game $gameId")
             WSConnections.add(gameId, this)
 
             try {
@@ -100,24 +173,9 @@ fun Application.configureRouting() {
                 }
             }
             finally {
-                println("Client disconnected!")
+                println("Player $playerId disconnected from game $gameId")
                 WSConnections.remove(gameId, this)
             }
         }
     }
 }
- 
-private suspend fun ApplicationCall.displayHome() {
-    respondTemplate("base.peb", model=emptyMap())
-}
-
-private suspend fun ApplicationCall.displayBoard() {
-    //val toPrint = boardString()
-    val printThis = "hello"
-    //val check = getBoardDetails(receiveParameters())
-    respondTemplate("board.peb", model = mapOf(
-        "printThis" to printThis
-    ))
-}
-
-private fun getBoardDetails(params: Parameters) = params["string"] ?: error("No board")

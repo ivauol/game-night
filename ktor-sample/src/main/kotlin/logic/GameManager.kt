@@ -43,7 +43,7 @@ class GameManager(){
             val historyMap: MutableMap<String, Int> = historyJson
                 .takeIf { it.isNotEmpty() }
                 ?.replace("$", "\"")
-                ?.replace("£", ",")
+                ?.replace("|", ",")
                 ?.let { Json.decodeFromString(it) }
                 ?: mutableMapOf()
 
@@ -60,6 +60,20 @@ class GameManager(){
                 it[Games.history] = history
                 it[Games.current] = game.current
             }
+        }
+    }
+
+    //get every game containing a specific player
+    fun getGames(playerId: Int): MutableList<Int>{
+        return transaction{
+            val query = Games.selectAll()
+            .filter{ it[Games.black_id].value == playerId || it[Games.white_id].value == playerId }
+
+            var results = mutableListOf<Int>()
+            for (game in query){
+                results.add(game[Games.id].value)
+            }
+            results
         }
     }
 }

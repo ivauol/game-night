@@ -1,0 +1,8 @@
+<body>
+    <h2>Enter Player ID</h2>
+    <form action="/player" method="post">
+        <label for="playerId">Player ID:</label>
+        <input type="number" name="playerId" id="playerId" required>
+        <button type="submit">Set Player ID</button>
+    </form>
+</body>

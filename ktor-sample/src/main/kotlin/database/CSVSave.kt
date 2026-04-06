@@ -21,7 +21,7 @@ fun saveToCSV() {
                 row[Games.white_id].value,
                 row[Games.board],
                 //so that there are no trip ups from " in bad places
-                row[Games.history].replace("\"", "$").replace(",", "£"),
+                row[Games.history].replace("\"", "$").replace(",", "|"),
                 row[Games.current],
                 row[Games.start_time],
                 row[Games.end_time] ?: "",

@@ -22,8 +22,7 @@
 </div>
 {#move making option#}
 <form id="moveForm" action="/move" method="post" style="justify-content:center; margin-top:180px;">
-    <input type="hidden" name="gameId" value="{{ gameId }}">
-    <input type="hidden" name="playerId" value="{{ playerId }}">
+    <input type="hidden" name="token" value="{{ session }}">
     <label for="move">Enter move:</label>
     <input type="text" name="move" id="move">
     <button type="submit">Submit Move</button>
@@ -60,7 +59,7 @@
         updateBoardHTML(board);
 
         //open a new connection
-        const socket = new WebSocket("ws://localhost:8080/ws/{{ gameId }}");
+        const socket = new WebSocket("ws://localhost:8080/ws?token={{session}}");
         socket.onopen = () => console.log("WebSocket connected");
         //reload the page if any changes have occurred
         socket.onmessage = (event) => {
