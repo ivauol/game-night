@@ -1,0 +1,85 @@
+{#Display the board#}
+<div style="display:flex; justify-content:center; margin-top:20px;">
+    <table border="1" cellspacing="0" cellpadding="4">
+        <tr>
+            <td></td>
+            {#column labels#}
+            {% for col in ['A','B','C','D','E','F','G','H'] %}
+            <td style="width:20px; height:20px; text-align:center;"><b>{{ col }}</b></td>
+            {% endfor %}
+        </tr>
+        {% for row in [1, 2, 3, 4, 5, 6, 7, 8] %}
+        <tr>
+            {#row labels#}
+            <td style="text-align:center;"><b>{{ row }}</b></td> {# row label #}
+            {% for col in [1, 2, 3, 4, 5, 6, 7, 8] %}
+            {#initialise all the cells#}
+            <td style="width:20px; height:20px; text-align:center;"></td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{#move making option#}
+<form id="moveForm" action="/move" method="post" style="justify-content:center; margin-top:180px;">
+    <input type="hidden" name="token" value="{{ session }}">
+    <label for="move">Enter move:</label>
+    <input type="text" name="move" id="move">
+    <button type="submit">Submit Move</button>
+</form>
+{# Update other players #}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const boardString = "{{ boardString }}";
+
+        //turn the board string into a 2D board
+        function parseBoardString(str) {
+            const board = [];
+            for (let i = 0; i < 8; i++) {
+                const row = [];
+                for (let j = 0; j < 8; j++) {
+                    row.push(str[i*8 + j]);
+                }
+                board.push(row);
+            }
+            return board;
+        }
+
+        //add all board entries into the table
+        function updateBoardHTML(board) {
+            const table = document.querySelector("table");
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    table.rows[i+1].cells[j+1].textContent = board[i][j];
+                }
+            }
+        }
+
+        const board = parseBoardString(boardString);
+        updateBoardHTML(board);
+
+        //open a new connection
+        const socket = new WebSocket("ws://localhost:8080/ws?token={{session}}");
+        socket.onopen = () => console.log("WebSocket connected");
+        //reload the page if any changes have occurred
+        socket.onmessage = (event) => {
+            console.log("Received:", event.data);
+            const newBoard = parseBoardString(event.data);
+            updateBoardHTML(newBoard);
+        };
+    });
+
+    //make a move without reloading
+    const form = document.getElementById("moveForm");
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const response = await fetch("/move", {
+            method: "POST",
+            body: formData
+        });
+        if (!response.ok) {
+            alert("Move failed");
+        }
+    });
+</script>

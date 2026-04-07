@@ -1,0 +1,8 @@
+{% extends "base.peb" %}
+{% block content %}
+
+<h1>I am displaying a board</h1>
+
+<p>I am printing: {{ printThis }}</p>
+
+{% endblock %}

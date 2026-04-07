@@ -1,0 +1,40 @@
+plugins {
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktor)
+    kotlin("plugin.serialization") version "1.9.10"
+}
+
+group = "com.example"
+version = "0.0.1"
+
+application {
+    mainClass = "io.ktor.server.netty.EngineMain"
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.netty)
+    implementation(libs.logback.classic)
+    implementation(libs.ktor.server.config.yaml)
+
+    implementation("io.ktor:ktor-server-pebble:2.3.4")
+    implementation("org.jetbrains.exposed:exposed-core:0.61.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
+    implementation("com.h2database:h2:2.3.232")
+    implementation("org.jetbrains.kotlinx:dataframe:1.0.0-Beta4")
+    implementation("org.jetbrains.kotlinx:dataframe-csv:1.0.0-Beta4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("io.ktor:ktor-server-websockets:2.3.4")
+    implementation("io.ktor:ktor-server-sessions:2.3.4")
+
+    testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.kotlin.test.junit)
+}
