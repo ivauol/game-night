@@ -74,9 +74,6 @@ class GameManager(){
                 }
             }
         }
-        println(winner)
-        println(status)
-        println(winner_id)
 
         transaction {
             Games.update({Games.id eq game_id}){
@@ -90,10 +87,13 @@ class GameManager(){
     }
 
     //get every game containing a specific player
-    fun getGames(playerId: Int): MutableList<Int>{
+    fun getGames(playerId: Int, status: String?): MutableList<Int>{
         return transaction{
-            val query = Games.selectAll()
+            var query = Games.selectAll()
             .filter{ it[Games.black_id].value == playerId || it[Games.white_id].value == playerId }
+
+            //filter by the correct status if necessary
+            if (status != null){ query = query.filter{ it[Games.status] == status }}
 
             var results = mutableListOf<Int>()
             for (game in query){

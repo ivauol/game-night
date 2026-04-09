@@ -21,7 +21,6 @@ fun Application.configureDatabase() {
         //insert all users into exposed database
         hydrateUsers().forEach { record ->
             Users.insert {
-                it[id] = record.user_id
                 it[username] = record.username
                 it[password] = record.password
                 it[email] = record.email
@@ -30,7 +29,6 @@ fun Application.configureDatabase() {
         //insert all games into exposed database
         hydrateGames().forEach { record ->
             Games.insert {
-                it[id] = record.game_id
                 it[white_id] = EntityID(record.white_id, Users)
                 it[black_id] = EntityID(record.black_id, Users)
                 it[board] = record.board
