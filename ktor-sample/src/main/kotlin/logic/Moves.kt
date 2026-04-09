@@ -13,5 +13,6 @@ data class MoveRequest(
 data class MoveResponse(
     val success: Boolean,
     val message: String,
-    val board: String? = null
+    val board: String? = null,
+    val winner: String? = null
 )

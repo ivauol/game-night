@@ -146,7 +146,8 @@ fun Application.configureRouting() {
             //reload the board if a success
             if (response.success) {
                 val game = gameManager.createGame(gameId, playerId) ?: return@post call.respond(HttpStatusCode.BadRequest)
-                WSConnections.broadcast(gameId, game.boardState)
+                val message = "${game.boardState},${response.winner}"
+                WSConnections.broadcast(gameId, message)
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respondText(response.message)

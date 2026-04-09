@@ -64,8 +64,22 @@
         //reload the page if any changes have occurred
         socket.onmessage = (event) => {
             console.log("Received:", event.data);
-            const newBoard = parseBoardString(event.data);
+            const parts = event.data.split(",")
+            const newBoard = parseBoardString(parts[0]);
             updateBoardHTML(newBoard);
+            
+            //check for win
+            if (parts[1] !== "") {
+                const form = document.getElementById("moveForm");
+                form.parentNode.removeChild(form);
+
+                const winnerDiv = document.createElement("div");
+                winnerDiv.style.textAlign = "center";
+                winnerDiv.style.fontSize = "24px";
+                winnerDiv.style.marginTop = "20px";
+                winnerDiv.innerText = parts[1] + " wins!";
+                document.body.appendChild(winnerDiv);
+            }
         };
     });
 
