@@ -71,6 +71,10 @@ fun Application.configureRouting() {
             call.displayRegister()
         }
 
+        get("/gamecenter"){
+            call.displayGameCenter()
+        }
+
         //to make a move on a board
         post("/move"){
             //get the values required
@@ -121,7 +125,7 @@ fun Application.configureRouting() {
 }
  
 private suspend fun ApplicationCall.displayHome() {
-    respondTemplate("base.peb", model=emptyMap())
+    respondTemplate("welcomepage.peb", model=emptyMap())
 }
 
 private suspend fun ApplicationCall.displayLogIn(){
@@ -132,6 +136,10 @@ private suspend fun ApplicationCall.displayRegister() {
     respondTemplate("accountcreate.peb", model= emptyMap()) // link to userdatabase
 }
 
+var image ="/workspaces/game-night/ktor-sample/src/main/resources/images/checkers-cover.png"
+private suspend fun ApplicationCall.displayGameCenter(){
+    respondTemplate("gamecenter.peb", mapOf("checkersImageUrl" to image))
+}
 private suspend fun ApplicationCall.displayBoard() {
     //val toPrint = boardString()
     val printThis = "hello"
