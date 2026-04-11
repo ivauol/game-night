@@ -171,7 +171,7 @@
     <div class="glow"></div>
 
     <div class="icon-bar">
-        <a class="active" href="/"><i class="fa fa-home"></i></a>
+        <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
     </div>
 
     <div class="game-panel">

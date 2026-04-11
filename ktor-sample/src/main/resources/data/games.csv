@@ -1,5 +1,5 @@
 game_id,black_id,white_id,board,history,current,start_time,end_time,status,winner_id
 1,1,2,.b.b.b.bb.b.b.b....b.b.b..b......w........w.w.w..w.w.w.ww.w.w.w.b,{$.b.b.b.bb.b.b.b....b.b.b..b.............w.w.w.w..w.w.w.ww.w.w.w.w$:1Â£$.b.b.b.bb.b.b.b....b.b.b..b......w........w.w.w..w.w.w.ww.w.w.w.b$:1},black,1680000000000,,active,
 2,1,2,.b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b,{},black,1680000000000,,active,
-3,1,2,.b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b,{},black,1680000000000,,active,
+3,1,2,.b.b.b.bb.b.b.b....b.b.b..b.............w.w.w.w..w.w.w.ww.w.w.w.w,{$.b.b.b.bb.b.b.b....b.b.b..b.............w.w.w.w..w.w.w.ww.w.w.w.w$:1},white,1680000000000,,active,
 4,1,2,.b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b,{},black,1680000000000,,active,

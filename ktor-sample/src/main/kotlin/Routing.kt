@@ -9,6 +9,7 @@ import io.ktor.server.request.receiveParameters
 import io.ktor.http.HttpStatusCode
 import io.ktor.websocket.*
 import io.ktor.server.websocket.*
+import io.ktor.server.http.content.*
 
 //store all online players for syncing
 object WSConnections {
@@ -39,6 +40,11 @@ object WSConnections {
 fun Application.configureRouting() {
     val gameManager = GameManager()
     routing {
+
+        static("/images") {
+            resources("static/images")
+        }
+
         get("/") {
             call.displayHome() //opens the first welcome page 
             //call.displayBoard()
@@ -74,6 +80,7 @@ fun Application.configureRouting() {
         get("/gamecenter"){
             call.displayGameCenter()
         }
+
 
         //to make a move on a board
         post("/move"){
@@ -136,10 +143,13 @@ private suspend fun ApplicationCall.displayRegister() {
     respondTemplate("accountcreate.peb", model= emptyMap()) // link to userdatabase
 }
 
-var image ="/workspaces/game-night/ktor-sample/src/main/resources/images/checkers-cover.png"
+
 private suspend fun ApplicationCall.displayGameCenter(){
+    val image= "/workspaces/game-night/ktor-sample/src/main/resources/static/images/checkers-cover.png"
     respondTemplate("gamecenter.peb", mapOf("checkersImageUrl" to image))
 }
+
+
 private suspend fun ApplicationCall.displayBoard() {
     //val toPrint = boardString()
     val printThis = "hello"

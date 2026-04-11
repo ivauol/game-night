@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
     <title>Game Center</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
@@ -173,11 +173,20 @@
 
         <div class="games-grid">
             <div class="game-card">
-                <img class="game-image" src="{{ checkersImageUrl }}" alt="Checkers cover">
+                <img class="game-image" src="/images/checkers-cover.png" alt="Checkers cover">
                 <div class="game-info">
                     <h2>♟ Checkers</h2>
-                    <p>Challenge players online in your neon-themed realtime checkers arena.</p>
-                    <a href="/checkers" class="play-btn">Play Now</a>
+                    <p></p>
+                    <a href="/game" class="play-btn">Play Now</a>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <img class="game-image" src="${checkersImageUrl}" alt=" Game cover">
+                <div class="game-info">
+                    <h2>♟ Other Game</h2>
+                    <p></p>
+                    <a href="#" class="play-btn">Play Now</a>
                 </div>
             </div>
         </div>
