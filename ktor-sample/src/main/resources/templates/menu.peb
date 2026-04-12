@@ -1,0 +1,5 @@
+<body>
+    <a href="/search?token={{ token }}&status=active">Active Games</a>
+    <a href="/search?token={{ token }}&status=ended">Ended Games</a>
+    <a href="/wait?token={{ token }}">Make New Game</a>
+</body>

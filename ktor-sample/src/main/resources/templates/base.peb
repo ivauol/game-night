@@ -1,15 +1,8 @@
-{# Base template - inherited by all complete pages #}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <title>{% block title %}Game Night{% endblock %}</title>
-</head>
 <body>
-<main>
-    {% block content %}{% endblock %}
-</main>
+    <h2>Enter Player ID</h2>
+    <form action="/player" method="post">
+        <label for="playerId">Player ID:</label>
+        <input type="number" name="playerId" id="playerId" required>
+        <button type="submit">Set Player ID</button>
+    </form>
 </body>
-</html>

@@ -27,7 +27,7 @@ class GameManager(){
         game.makeMove(move)
         this.updateGame(game, game_id)
         saveToCSV()
-        return MoveResponse(true, "Move successful", game.boardState)
+        return MoveResponse(true, "Move successful", game.boardState, game.winCheck(game.current))
     }
 
     //to load a game from the database and turn it into a Game object
@@ -54,20 +54,46 @@ class GameManager(){
     //update an existing game after a move
     fun updateGame(game: Game, game_id: Int){
         val history = Json.encodeToString(game.history)
+
+        val winner = game.winCheck(game.current)
+        var status = "active"
+        var winner_id: Int? = null
+        if (winner != ""){
+            status = "ended"
+            winner_id = 0
+            if (winner == "black"){
+                winner_id = transaction{
+                    val query = Games.selectAll().first{it[Games.id].value == game_id}
+                    query[Games.black_id].value
+                }
+            }
+            else {
+                winner_id = transaction{
+                    val query = Games.selectAll().first{it[Games.id].value == game_id}
+                    query[Games.white_id].value
+                }
+            }
+        }
+
         transaction {
             Games.update({Games.id eq game_id}){
                 it[Games.board] = game.boardState
                 it[Games.history] = history
                 it[Games.current] = game.current
+                it[Games.status] = status
+                it[Games.winner_id] = winner_id
             }
         }
     }
 
     //get every game containing a specific player
-    fun getGames(playerId: Int): MutableList<Int>{
+    fun getGames(playerId: Int, status: String?): MutableList<Int>{
         return transaction{
-            val query = Games.selectAll()
+            var query = Games.selectAll()
             .filter{ it[Games.black_id].value == playerId || it[Games.white_id].value == playerId }
+
+            //filter by the correct status if necessary
+            if (status != null){ query = query.filter{ it[Games.status] == status }}
 
             var results = mutableListOf<Int>()
             for (game in query){

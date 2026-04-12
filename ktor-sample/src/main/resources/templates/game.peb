@@ -1,3 +1,8 @@
+{#display black's id#}
+<div style="text-align:center; margin-top:20px;" id="blackPlayer">
+    Black: <span id="blackId">{{ black }}</span>
+</div>
+
 {#Display the board#}
 <div style="display:flex; justify-content:center; margin-top:20px;">
     <table border="1" cellspacing="0" cellpadding="4">
@@ -20,6 +25,11 @@
         {% endfor %}
     </table>
 </div>
+
+<div style="text-align:center; margin-top:20px;" id="whitePlayer">
+    White: <span id="whiteId">{{ white }}</span>
+</div>
+
 {#move making option#}
 <form id="moveForm" action="/move" method="post" style="justify-content:center; margin-top:180px;">
     <input type="hidden" name="token" value="{{ session }}">
@@ -55,17 +65,52 @@
             }
         }
 
+        //highlight whos turn it is
+        function currentPlayer(turn) {
+            const black = document.getElementById("blackId");
+            const white = document.getElementById("whiteId");
+
+            if (turn === "black") {
+                black.style.fontWeight = "bold";
+                white.style.fontWeight = "normal";
+            } else {
+                white.style.fontWeight = "bold";
+                black.style.fontWeight = "normal";
+            }
+        }
+
+        //check for win
+        function winCheck(player) {
+            if (player !== "") {
+                const form = document.getElementById("moveForm");
+                form.parentNode.removeChild(form);
+
+                const winnerDiv = document.createElement("div");
+                winnerDiv.style.textAlign = "center";
+                winnerDiv.style.fontSize = "24px";
+                winnerDiv.style.marginTop = "20px";
+                winnerDiv.innerText = player + " wins!";
+                document.body.appendChild(winnerDiv);
+            }
+        }
+
         const board = parseBoardString(boardString);
         updateBoardHTML(board);
+        currentPlayer("{{current}}")
+        winCheck("{{winner}}")
 
         //open a new connection
-        const socket = new WebSocket("ws://localhost:8080/ws?token={{session}}");
+        const socket = new WebSocket("ws://localhost:8080/gamews?token={{session}}");
         socket.onopen = () => console.log("WebSocket connected");
         //reload the page if any changes have occurred
         socket.onmessage = (event) => {
             console.log("Received:", event.data);
-            const newBoard = parseBoardString(event.data);
+            const parts = event.data.split(",")
+            const newBoard = parseBoardString(parts[0]);
             updateBoardHTML(newBoard);
+            currentPlayer(parts[2])
+            
+            winCheck(parts[1])
         };
     });
 
