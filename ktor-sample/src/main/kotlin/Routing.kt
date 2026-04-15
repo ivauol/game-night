@@ -59,7 +59,7 @@ fun Application.configureRouting() {
         get("/game"){
             //test ids
             val gameId = 3
-            val playerId = 1
+            val playerId = 2
 
             //make the game
             val game = gameManager.createGame(gameId, playerId)
