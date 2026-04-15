@@ -33,13 +33,69 @@ fun Application.configureRouting() {
         }
 
         get("/") {
-            call.displayHome() //opens the first welcome page 
-            //call.displayBoard()
-            //call.respondText("Hello World!")
+            call.respondTemplate("base.peb", mapOf())
+            //call.displayHome()
         }
 
-        get("/board"){
-            call.displayBoard()
+        //load the login page 
+        get("/login"){
+            call.displayLogIn()
+        }
+
+        get("/register"){
+            call.displayRegister()
+        }
+
+        get("/gamecenter"){
+            val sessionToken = call.request.queryParameters["token"]
+            ?: return@get call.respondText("No token provided")
+
+            call.displayGameCenter(sessionToken)
+        }
+
+        //load the menu of options
+        get("/menu") {
+            //get necessary parameters
+            val token = call.request.queryParameters["token"]
+            ?: return@get call.respondText("No token provided")
+            val session = playerSessions[token]
+            ?: return@get call.respondText("Invalid token")
+
+            //reset the gameId if going back from /game
+            playerSessions[token] = session.copy(gameId = 0)
+
+            val playerId = session.playerId
+
+            call.respondTemplate("menu.peb", mapOf("token" to token))
+        }
+
+        //wait for an opponent in matchmaking
+        get("/wait"){
+            //get necessary parameters
+            val token = call.request.queryParameters["token"]
+            ?: return@get call.respondText("No token provided")
+            call.respondTemplate("wait.peb", mapOf("token" to token))
+        }
+
+                //search through all games for a specific player
+        get("/search") {
+            //get necessary parameters
+            val token = call.request.queryParameters["token"]
+            ?: return@get call.respondText("No token provided")
+            val session = playerSessions[token]
+            ?: return@get call.respondText("Invalid token")
+
+            //decide whether looking for active games or ended games
+            val status = call.request.queryParameters["status"]
+
+            //reset the gameId if going back from /game
+            playerSessions[token] = session.copy(gameId = 0)
+
+            val playerId = session.playerId
+            val playerGames = gameManager.getGames(playerId, status)
+
+            call.respondTemplate("search.peb",mapOf("games" to playerGames, "token" to token)
+            )
         }
 
         //load the game
@@ -55,7 +111,7 @@ fun Application.configureRouting() {
             val game = gameManager.createGame(gameId, playerId)
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
-            call.respondTemplate("game.peb", mapOf("boardString" to game.boardState, "session" to sessionToken, "black" to game.black_id, "white" to game.white_id, "current" to game.current, "winner" to game.winCheck(game.current)))
+            call.respondTemplate("game.peb", mapOf("boardString" to game.boardState, "session" to sessionToken, "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "current" to game.current, "winner" to game.winCheck(game.current)))
         }
 
         //to set the player for testing
@@ -71,7 +127,7 @@ fun Application.configureRouting() {
             val sessionToken = bytes.joinToString("") { "%02x".format(it) }
             playerSessions[sessionToken] = PlayerSession(playerId, gameId = 0)
 
-            call.respondRedirect("/menu?token=$sessionToken")
+            call.respondRedirect("/gamecenter?token=$sessionToken")
         }
 
         post("/join"){
@@ -86,20 +142,6 @@ fun Application.configureRouting() {
             playerSessions[sessionToken] = playerSessions[sessionToken]!!.copy(gameId = gameId)
             call.respondRedirect("/game?token=$sessionToken")
         }
-
-        //load the login page 
-        get("/login"){
-            call.displayLogIn()
-        }
-
-        get("/register"){
-            call.displayRegister()
-        }
-
-        get("/gamecenter"){
-            call.displayGameCenter()
-        }
-
 
         //to make a move on a board
         post("/move"){
@@ -129,7 +171,7 @@ fun Application.configureRouting() {
                 WSConnections.broadcast(gameId, message)
                 call.respond(HttpStatusCode.OK)
             } else {
-                call.respondText(response.message)
+                call.respond(HttpStatusCode.BadRequest, response.message)
             }
         }
 
@@ -215,9 +257,9 @@ private suspend fun ApplicationCall.displayRegister() {
 }
 
 
-private suspend fun ApplicationCall.displayGameCenter(){
+private suspend fun ApplicationCall.displayGameCenter(token: String){
     val image= "/workspaces/game-night/ktor-sample/src/main/resources/static/images/checkers-cover.png"
-    respondTemplate("gamecenter.peb", mapOf("checkersImageUrl" to image))
+    respondTemplate("gamecenter.peb", mapOf("checkersImageUrl" to image, "token" to token))
 }
 
 

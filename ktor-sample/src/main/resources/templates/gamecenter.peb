@@ -177,7 +177,7 @@
                 <div class="game-info">
                     <h2>♟ Checkers</h2>
                     <p></p>
-                    <a href="/game" class="play-btn">Play Now</a>
+                    <a href="/menu?token={{token}}" class="play-btn">Play Now</a>
                 </div>
             </div>
 
