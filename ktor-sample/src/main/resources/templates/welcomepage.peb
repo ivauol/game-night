@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #312e81);
+            color: white;
+            overflow: hidden;
+        }
+
+        .icon-bar {
+            width: 100%;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .icon-bar a {
+            display: inline-block;
+            padding: 18px 24px;
+            color: white;
+            font-size: 28px;
+            transition: 0.3s ease;
+        }
+
+        .icon-bar a:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: calc(100vh - 70px);
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 5rem;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 25px rgba(0,0,0,0.35);
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            text-decoration: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 16px 42px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45);
+        }
+
+        .glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(59,130,246,0.15);
+            filter: blur(80px);
+            border-radius: 50%;
+            top: 10%;
+            left: 10%;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+
+    <div class="icon-bar">
+        <a href="/"><i class="fa fa-home"></i></a>
+    </div>
+
+    <section class="center">
+        <h1>WELCOME!</h1>
+
+        <div class="button-group">
+            <a href="/login" class="btn">LOGIN</a>
+            <a href="/register" class="btn">REGISTER</a>
+        </div>
+    </section>
+</body>
+</html>

@@ -9,6 +9,7 @@ import io.ktor.server.request.receiveParameters
 import io.ktor.http.HttpStatusCode
 import io.ktor.websocket.*
 import io.ktor.server.websocket.*
+import io.ktor.server.http.content.*
 import io.ktor.server.sessions.*
 import kotlinx.serialization.Serializable
 import io.ktor.util.*
@@ -26,54 +27,19 @@ val playerSessions = mutableMapOf<String, PlayerSession>()
 fun Application.configureRouting() {
     val gameManager = GameManager()
     routing {
-        //home page loading
-        get("/"){
-            call.respondTemplate("base.peb", mapOf())
+
+        static("/images") {
+            resources("static/images")
         }
 
-        //load the menu of options
-        get("/menu") {
-            //get necessary parameters
-            val token = call.request.queryParameters["token"]
-            ?: return@get call.respondText("No token provided")
-            val session = playerSessions[token]
-            ?: return@get call.respondText("Invalid token")
-
-            //reset the gameId if going back from /game
-            playerSessions[token] = session.copy(gameId = 0)
-
-            val playerId = session.playerId
-
-            call.respondTemplate("menu.peb", mapOf("token" to token))
+        get("/") {
+            call.displayHome() //opens the first welcome page 
+            //call.displayBoard()
+            //call.respondText("Hello World!")
         }
 
-        //wait for an opponent in matchmaking
-        get("/wait"){
-            //get necessary parameters
-            val token = call.request.queryParameters["token"]
-            ?: return@get call.respondText("No token provided")
-            call.respondTemplate("wait.peb", mapOf("token" to token))
-        }
-
-        //search through all games for a specific player
-        get("/search") {
-            //get necessary parameters
-            val token = call.request.queryParameters["token"]
-            ?: return@get call.respondText("No token provided")
-            val session = playerSessions[token]
-            ?: return@get call.respondText("Invalid token")
-
-            //decide whether looking for active games or ended games
-            val status = call.request.queryParameters["status"]
-
-            //reset the gameId if going back from /game
-            playerSessions[token] = session.copy(gameId = 0)
-
-            val playerId = session.playerId
-            val playerGames = gameManager.getGames(playerId, status)
-
-            call.respondTemplate("search.peb",mapOf("games" to playerGames, "token" to token)
-            )
+        get("/board"){
+            call.displayBoard()
         }
 
         //load the game
@@ -120,6 +86,20 @@ fun Application.configureRouting() {
             playerSessions[sessionToken] = playerSessions[sessionToken]!!.copy(gameId = gameId)
             call.respondRedirect("/game?token=$sessionToken")
         }
+
+        //load the login page 
+        get("/login"){
+            call.displayLogIn()
+        }
+
+        get("/register"){
+            call.displayRegister()
+        }
+
+        get("/gamecenter"){
+            call.displayGameCenter()
+        }
+
 
         //to make a move on a board
         post("/move"){
@@ -221,3 +201,33 @@ fun Application.configureRouting() {
         }
     }
 }
+ 
+private suspend fun ApplicationCall.displayHome() {
+    respondTemplate("welcomepage.peb", model=emptyMap())
+}
+
+private suspend fun ApplicationCall.displayLogIn(){
+    respondTemplate("login-page.peb", model =emptyMap() ) // link to userdatase
+}
+
+private suspend fun ApplicationCall.displayRegister() {
+    respondTemplate("accountcreate.peb", model= emptyMap()) // link to userdatabase
+}
+
+
+private suspend fun ApplicationCall.displayGameCenter(){
+    val image= "/workspaces/game-night/ktor-sample/src/main/resources/static/images/checkers-cover.png"
+    respondTemplate("gamecenter.peb", mapOf("checkersImageUrl" to image))
+}
+
+
+private suspend fun ApplicationCall.displayBoard() {
+    //val toPrint = boardString()
+    val printThis = "hello"
+    //val check = getBoardDetails(receiveParameters())
+    respondTemplate("board.peb", model = mapOf(
+        "printThis" to printThis
+    ))
+}
+
+private fun getBoardDetails(params: Parameters) = params["string"] ?: error("No board")
