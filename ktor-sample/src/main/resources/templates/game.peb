@@ -126,6 +126,21 @@
         .white-piece { background: radial-gradient(circle at 30% 30%, #ffffff, #cbd5e1); }
         .black-piece { background: radial-gradient(circle at 30% 30%, #64748b, #0f172a); }
 
+        .king {
+            position: relative;
+        }
+
+        .king::after {
+            content: "♔";
+            position: absolute;
+            font-size: 39px;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: gold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
         #moveForm {
             max-width: 500px;
             margin: 30px auto 0;
@@ -171,7 +186,7 @@
     <div class="glow"></div>
 
     <div class="icon-bar">
-        <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
+        <a class="active" href="/gamecenter?token={{session}}"><i class="fa fa-home"></i></a>
     </div>
 
     {#display black's id#}
@@ -182,7 +197,6 @@
     <div class="game-panel">
         <h1>♟ Checkers Game</h1>
         <p style="text-align:center;">Player ID: {{ playerId }}</p>
-        <p id="status">Waiting for moves...</p>
 
         <div class="board-container">
             <table class="checkers-board">
@@ -207,6 +221,8 @@
     <div style="text-align:center; margin-top:20px;" id="whitePlayer">
         White: <span id="whiteId">{{ white }}</span>
     </div>
+
+    <p id="errorBox" style="text-align:center"></p>
 
     {#move making option#}
     <form id="moveForm" action="/move" method="post" style="justify-content:center; margin-top:180px;">
@@ -234,21 +250,25 @@
             }
 
             function updateBoardHTML(board) {
-                    const table = document.querySelector(".checkers-board");
-                    for (let i = 0; i < 8; i++) {
-                        for (let j = 0; j < 8; j++) {
-                            const cell = table.rows[i + 1].cells[j + 1];
-                            const piece = board[i][j];
-                            if (piece === "r" || piece === "w") {
-                                cell.innerHTML = '<div class="piece white-piece"></div>';
-                            } else if (piece === "b") {
-                                cell.innerHTML = '<div class="piece black-piece"></div>';
-                            } else {
-                                cell.innerHTML = "";
-                            }
+                const table = document.querySelector(".checkers-board");
+                for (let i = 0; i < 8; i++) {
+                    for (let j = 0; j < 8; j++) {
+                        const cell = table.rows[i + 1].cells[j + 1];
+                        const piece = board[i][j];
+                        if (piece === "w") {
+                            cell.innerHTML = '<div class="piece white-piece"></div>';
+                        } else if (piece === "b") {
+                            cell.innerHTML = '<div class="piece black-piece"></div>';
+                        } else if (piece === "W") {
+                            cell.innerHTML = '<div class="piece white-piece king"></div>';
+                        } else if (piece === "B") {
+                            cell.innerHTML = '<div class="piece black-piece king"></div>';
+                        } else {
+                            cell.innerHTML = "";
                         }
                     }
                 }
+            }
 
             //highlight whos turn it is
             function currentPlayer(turn) {
@@ -298,5 +318,24 @@
                 winCheck(parts[1])
             };
         });
+
+    //make a move without reloading
+    const form = document.getElementById("moveForm");
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const response = await fetch("/move", {
+            method: "POST",
+            body: formData
+        });
+        const errorBox = document.getElementById("errorBox");
+        if (!response.ok) {
+            const text = await response.text();
+            errorBox.innerText = text;
+        }
+        else {
+            errorBox.innerText = "";
+        }
+    });
     </script>
 </body>
