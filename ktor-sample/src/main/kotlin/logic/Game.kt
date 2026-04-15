@@ -177,7 +177,7 @@ class Game(val black_id: Int, val white_id: Int, var current: String = "black", 
     }
 
     //to receive moves until a valid one is sent, and then update the board
-    fun makeMove(move: MutableList<Array<Int>>): Boolean{
+    fun makeMove(move: MutableList<Array<Int>>){
         val player = this.current
         var next: String
         //decide who's turn it is
@@ -211,8 +211,10 @@ class Game(val black_id: Int, val white_id: Int, var current: String = "black", 
         }
         this.current = next
         boardString()
+        if (historyReset){
+            this.history.clear()
+        }
         this.history[this.boardState] = this.history.getOrDefault(this.boardState, 0) + 1
-        return historyReset
     }
 
     //determine if someone has won or if there is a stalemate

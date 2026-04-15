@@ -174,6 +174,11 @@
         <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
     </div>
 
+    {#display black's id#}
+    <div style="text-align:center; margin-top:20px;" id="blackPlayer">
+        Black: <span id="blackId">{{ black }}</span>
+    </div>
+
     <div class="game-panel">
         <h1>♟ Checkers Game</h1>
         <p style="text-align:center;">Player ID: {{ playerId }}</p>
@@ -199,62 +204,99 @@
         </div>
     </div>
 
-    <form id="moveForm" action="/move" method="post">
-        <input type="hidden" name="gameId" value="{{ gameId }}">
-        <input type="hidden" name="playerId" value="{{ playerId }}">
+    <div style="text-align:center; margin-top:20px;" id="whitePlayer">
+        White: <span id="whiteId">{{ white }}</span>
+    </div>
+
+    {#move making option#}
+    <form id="moveForm" action="/move" method="post" style="justify-content:center; margin-top:180px;">
+        <input type="hidden" name="token" value="{{ session }}">
         <label for="move">Enter move:</label>
-        <input type="text" name="move" id="move" placeholder="A3-B4">
+        <input type="text" name="move" id="move">
         <button type="submit">Submit Move</button>
     </form>
-
+    {# Update other players #}
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const boardString = "{{ boardString }}";
+
+            //turn the board string into a 2D board
             function parseBoardString(str) {
                 const board = [];
                 for (let i = 0; i < 8; i++) {
                     const row = [];
-                    for (let j = 0; j < 8; j++) row.push(str[i * 8 + j]);
+                    for (let j = 0; j < 8; j++) {
+                        row.push(str[i*8 + j]);
+                    }
                     board.push(row);
                 }
                 return board;
             }
+
             function updateBoardHTML(board) {
-                const table = document.querySelector(".checkers-board");
-                for (let i = 0; i < 8; i++) {
-                    for (let j = 0; j < 8; j++) {
-                        const cell = table.rows[i + 1].cells[j + 1];
-                        const piece = board[i][j];
-                        if (piece === "r" || piece === "w") {
-                            cell.innerHTML = '<div class="piece white-piece"></div>';
-                        } else if (piece === "b") {
-                            cell.innerHTML = '<div class="piece black-piece"></div>';
-                        } else {
-                            cell.innerHTML = "";
+                    const table = document.querySelector(".checkers-board");
+                    for (let i = 0; i < 8; i++) {
+                        for (let j = 0; j < 8; j++) {
+                            const cell = table.rows[i + 1].cells[j + 1];
+                            const piece = board[i][j];
+                            if (piece === "r" || piece === "w") {
+                                cell.innerHTML = '<div class="piece white-piece"></div>';
+                            } else if (piece === "b") {
+                                cell.innerHTML = '<div class="piece black-piece"></div>';
+                            } else {
+                                cell.innerHTML = "";
+                            }
                         }
                     }
                 }
+
+            //highlight whos turn it is
+            function currentPlayer(turn) {
+                const black = document.getElementById("blackId");
+                const white = document.getElementById("whiteId");
+
+                if (turn === "black") {
+                    black.style.fontWeight = "bold";
+                    white.style.fontWeight = "normal";
+                } else {
+                    white.style.fontWeight = "bold";
+                    black.style.fontWeight = "normal";
+                }
             }
+
+            //check for win
+            function winCheck(player) {
+                if (player !== "") {
+                    const form = document.getElementById("moveForm");
+                    form.parentNode.removeChild(form);
+
+                    const winnerDiv = document.createElement("div");
+                    winnerDiv.style.textAlign = "center";
+                    winnerDiv.style.fontSize = "24px";
+                    winnerDiv.style.marginTop = "20px";
+                    winnerDiv.innerText = player + " wins!";
+                    document.body.appendChild(winnerDiv);
+                }
+            }
+
             const board = parseBoardString(boardString);
             updateBoardHTML(board);
-            const socket = new WebSocket("ws://localhost:8080/ws/{{ gameId }}");
+            currentPlayer("{{current}}")
+            winCheck("{{winner}}")
+
+            //open a new connection
+            const socket = new WebSocket("ws://localhost:8080/gamews?token={{session}}");
+            socket.onopen = () => console.log("WebSocket connected");
+            //reload the page if any changes have occurred
             socket.onmessage = (event) => {
-                const newBoard = parseBoardString(event.data);
+                console.log("Received:", event.data);
+                const parts = event.data.split(",")
+                const newBoard = parseBoardString(parts[0]);
                 updateBoardHTML(newBoard);
-                document.getElementById("status").textContent = "Board updated!";
+                currentPlayer(parts[2])
+                
+                winCheck(parts[1])
             };
-            const form = document.getElementById("moveForm");
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const response = await fetch("/move", { method: "POST", body: formData });
-                if (!response.ok) alert("Move failed");
-                else {
-                    document.getElementById("status").textContent = "Move submitted!";
-                    document.getElementById("move").value = "";
-                }
-            });
         });
     </script>
 </body>
-</html>

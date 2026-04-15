@@ -1,0 +1,22 @@
+<h2>Waiting for an opponent...</h2>
+<script>
+    const socket = new WebSocket("ws://localhost:8080/waitws?token={{token}}");
+    
+    //when an opponent has been found
+    socket.onmessage = (event) => {
+        const gameId = event.data
+        console.log(gameId)
+
+        const formData = new FormData();
+        formData.append("token", "{{token}}");
+        formData.append("gameId", gameId);
+
+        //redirect to the new game immediately
+        fetch("/join", {
+            method: "POST",
+            body: formData
+        }).then(() => {
+            window.location.href = `/game?token={{token}}`;
+        });
+    };
+</script>

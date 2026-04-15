@@ -6,7 +6,6 @@ import org.jetbrains.kotlinx.dataframe.io.readCsv
 
 //game layout
 data class GameRecord(
-    val game_id: Int,
     val black_id: Int,
     val white_id: Int,
     val board: String,
@@ -20,7 +19,6 @@ data class GameRecord(
 
 //user layout
 data class UserRecord(
-    val user_id: Int,
     val username: String,
     val password: String,
     val email: String
@@ -37,7 +35,6 @@ fun hydrateGames(): List<GameRecord> {
     val grouped = df.rows()
         .map { row ->
             GameRecord(
-                game_id = row["game_id"].parseCell()!!.toInt(),
                 black_id = row["black_id"].parseCell()!!.toInt(),
                 white_id = row["white_id"].parseCell()!!.toInt(),
                 board = row["board"].parseCell()!!,
@@ -61,7 +58,6 @@ fun hydrateUsers(): List<UserRecord> {
     val grouped = df.rows()
         .map { row ->
             UserRecord(
-                user_id = row["user_id"].parseCell()!!.toInt(),
                 username = row["username"].parseCell()!!,
                 password = row["password"].parseCell()!!,
                 email = row["email"].parseCell()!!,

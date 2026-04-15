@@ -1,3 +1,4 @@
 user_id,username,password,email
-1,blackPlayer,password,black@example.com
-2,whitePlayer,password,white@example.com
+1,Alice,alice123,alice@example.com
+2,Bob,bob123,bob@example.com
+3,Charlie,charlie123,charlie@example.com

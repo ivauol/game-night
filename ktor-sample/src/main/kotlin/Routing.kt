@@ -10,32 +10,19 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.websocket.*
 import io.ktor.server.websocket.*
 import io.ktor.server.http.content.*
+import io.ktor.server.sessions.*
+import kotlinx.serialization.Serializable
+import io.ktor.util.*
+import java.security.SecureRandom
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.dao.id.EntityID
+import kotlinx.coroutines.delay
 
-//store all online players for syncing
-object WSConnections {
-    private val sessions = mutableMapOf<Int, MutableList<DefaultWebSocketServerSession>>()
-
-    //add a new websocket connection to a game
-    fun add(gameId: Int, session: DefaultWebSocketServerSession) {
-        val list = sessions.getOrPut(gameId) { mutableListOf() }
-        list.add(session)
-    }
-
-    //remove a websocket connection from a game
-    fun remove(gameId: Int, session: DefaultWebSocketServerSession) {
-        sessions[gameId]?.remove(session)
-        if (sessions[gameId]?.isEmpty() == true) {
-            sessions.remove(gameId)
-        }
-    }
-
-    //send a message to all online players in a game
-    suspend fun broadcast(gameId: Int, message: String) {
-        sessions[gameId]?.forEach {
-            it.send(Frame.Text(message))
-        }
-    }
-}
+//store player session
+@Serializable
+data class PlayerSession(val playerId: Int, val gameId: Int)
+val playerSessions = mutableMapOf<String, PlayerSession>()
 
 fun Application.configureRouting() {
     val gameManager = GameManager()
@@ -57,15 +44,47 @@ fun Application.configureRouting() {
 
         //load the game
         get("/game"){
-            //test ids
-            val gameId = 3
-            val playerId = 2
+            //get necessary parameters
+            val sessionToken = call.request.queryParameters["token"]
+            ?: return@get call.respondText("No token provided")
+            val playerId = playerSessions[sessionToken]?.playerId
+            val gameId = playerSessions[sessionToken]?.gameId
+            if (playerId == null || gameId == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
             //make the game
             val game = gameManager.createGame(gameId, playerId)
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
-            call.respondTemplate("test.peb", mapOf("boardString" to game.boardState, "gameId" to gameId, "playerId" to playerId))
+            call.respondTemplate("game.peb", mapOf("boardString" to game.boardState, "session" to sessionToken, "black" to game.black_id, "white" to game.white_id, "current" to game.current, "winner" to game.winCheck(game.current)))
+        }
+
+        //to set the player for testing
+        post("/player"){
+            //get the player id
+            val params = call.receiveParameters()
+            val playerId = params["playerId"]?.toIntOrNull()
+            ?: return@post call.respondText("Invalid player ID")
+
+            //create a random 32 byte hex value for session
+            val bytes = ByteArray(32)
+            SecureRandom().nextBytes(bytes)
+            val sessionToken = bytes.joinToString("") { "%02x".format(it) }
+            playerSessions[sessionToken] = PlayerSession(playerId, gameId = 0)
+
+            call.respondRedirect("/menu?token=$sessionToken")
+        }
+
+        post("/join"){
+            //get necessary values
+            val params = call.receiveParameters()
+            val gameId = params["gameId"]?.toIntOrNull()
+            ?: return@post call.respondText("Invalid game ID")
+            val sessionToken = params["token"]
+            ?: return@post call.respondText("Invalid session token")
+
+            //update session so it references the selected game
+            playerSessions[sessionToken] = playerSessions[sessionToken]!!.copy(gameId = gameId)
+            call.respondRedirect("/game?token=$sessionToken")
         }
 
         //load the login page 
@@ -84,10 +103,14 @@ fun Application.configureRouting() {
 
         //to make a move on a board
         post("/move"){
-            //get the values required
+            //get the user session
             val params = call.receiveParameters()
-            val gameId = params["gameId"]?.toIntOrNull() ?: return@post call.respondText("Invalid game id")
-            val playerId = params["playerId"]?.toIntOrNull() ?: return@post call.respondText("Invalid player id")
+            val token = params["token"] ?: return@post call.respondText("No token provided")
+            val session = playerSessions[token] ?: return@post call.respondText("Invalid session")
+
+            //get the values required
+            val gameId = session.gameId
+            val playerId = session.playerId
             val moveInput = params["move"] ?: return@post call.respondText("Move not provided")
 
             //convert from standard move notation to a list of positions
@@ -102,30 +125,78 @@ fun Application.configureRouting() {
             //reload the board if a success
             if (response.success) {
                 val game = gameManager.createGame(gameId, playerId) ?: return@post call.respond(HttpStatusCode.BadRequest)
-                WSConnections.broadcast(gameId, game.boardState)
+                val message = "${game.boardState},${response.winner},${game.current}"
+                WSConnections.broadcast(gameId, message)
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respondText(response.message)
             }
         }
 
-        //set up the websocket for sync between players
-        webSocket("/ws/{gameId}") {
-            val gameId = call.parameters["gameId"]?.toIntOrNull() ?: return@webSocket close(
-                CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Invalid gameId")
-            )
+        //set up the websocket for sync between opponents
+        webSocket("/gamews") {
+            //get game and player id
+            val token = call.request.queryParameters["token"]
+            ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "No token"))
+            val session = playerSessions[token]
+            ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Invalid token"))
 
-            println("Client connected!")
+            val gameId = session.gameId
+            val playerId = session.playerId
+
+            println("Player $playerId connected to game $gameId")
             WSConnections.add(gameId, this)
 
             try {
                 for (frame in incoming) {
-                    // empty as no messages sent by client
+                    //no messages sent 
                 }
-            }
+            } 
             finally {
-                println("Client disconnected!")
+                println("Player $playerId disconnected from game $gameId")
                 WSConnections.remove(gameId, this)
+            }
+        }
+
+        //wait in the queue until an opponent is chosen for a new game
+        webSocket("/waitws"){
+            val token = call.request.queryParameters["token"]
+            ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "No token"))
+            val session = playerSessions[token]
+            ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Invalid token"))
+
+            val playerId = session.playerId
+            matchmakingQueue.sessions[playerId] = this
+
+            try{
+                while (true) {
+                    val opponentId = matchmakingQueue.match(playerId)
+
+                    if (opponentId != null) {
+                        //if opponent found, add new game to database
+                        val gameId = transaction{
+                            Games.insert {
+                                it[white_id] = EntityID(opponentId, Users)
+                                it[black_id] = EntityID(playerId, Users)
+                                it[board] = ".b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b"
+                                it[history] = "{}"
+                                it[current] = "black"
+                                it[start_time] = 1680000000100
+                                it[status] = "active"
+                            } get Games.id
+                        }
+                        saveToCSV()
+
+                        //send the new game id to both players
+                        matchmakingQueue.notify(playerId, "$gameId")
+                        matchmakingQueue.notify(opponentId, "$gameId")
+
+                        break
+                    }
+                    delay(500)
+                }
+            } finally {
+                matchmakingQueue.remove(playerId)
             }
         }
     }
