@@ -58,8 +58,10 @@ class GameManager(){
         val winner = game.winCheck(game.current)
         var status = "active"
         var winner_id: Int? = null
+        var win_time: Long? = null
         if (winner != ""){
             status = "ended"
+            win_time = System.currentTimeMillis()
             winner_id = 0
             if (winner == "black"){
                 winner_id = transaction{
@@ -82,6 +84,7 @@ class GameManager(){
                 it[Games.current] = game.current
                 it[Games.status] = status
                 it[Games.winner_id] = winner_id
+                it[Games.end_time] = win_time
             }
         }
     }

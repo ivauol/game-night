@@ -20,3 +20,7 @@
         });
     };
 </script>
+<script src="/js/ping.js"></script>
+<script>
+    ping_interval("{{token}}");
+</script>

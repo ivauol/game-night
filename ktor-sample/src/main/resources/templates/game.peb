@@ -338,4 +338,8 @@
         }
     });
     </script>
+    <script src="/js/ping.js"></script>
+    <script>
+        ping_interval("{{session}}");
+    </script>
 </body>

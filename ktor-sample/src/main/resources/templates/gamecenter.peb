@@ -39,15 +39,20 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
-        .icon-bar a {
+        .icon-bar a,
+        .icon-bar form button {
+            all: unset;
+
             display: inline-block;
             padding: 18px 24px;
             color: white;
             font-size: 28px;
             transition: 0.3s ease;
+            text-decoration: none;
         }
 
-        .icon-bar a:hover {
+        .icon-bar a:hover,
+        .icon-bar form button:hover {
             background: rgba(255,255,255,0.12);
         }
 
@@ -159,6 +164,18 @@
 
     <div class="icon-bar">
         <a href="/"><i class="fa fa-home"></i></a>
+
+        <div style="float: right;">
+            {% if login %}
+                <a href="/login?token={{token}}">Login</a>
+                <a href="/register?token={{token}}">Register</a>
+            {% else %}
+                <form action="/logout" method="post" style="display:inline;">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <button class="play-btn" type="submit">Logout</button>
+                </form>
+            {% endif %}
+        </div>
     </div>
 
     <section class="center">
@@ -191,5 +208,9 @@
             </div>
         </div>
     </section>
+    <script src="/js/ping.js"></script>
+    <script>
+        ping_interval("{{token}}");
+    </script>
 </body>
 </html>

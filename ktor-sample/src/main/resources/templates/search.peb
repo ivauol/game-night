@@ -13,4 +13,8 @@
     </ul>
 
     <a href="/">Back to Home</a>
+    <script src="/js/ping.js"></script>
+    <script>
+        ping_interval("{{token}}");
+    </script>
 </body>

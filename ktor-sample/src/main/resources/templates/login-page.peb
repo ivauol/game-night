@@ -158,8 +158,12 @@
 
             <button type="submit">LOGIN</button>
 
-            <p class="signup-text">Don't have an account? <a href="/register">Register</a></p>
+            <p class="signup-text">Don't have an account? <a href="/register?token={{token}}">Register</a></p>
         </div>
     </div>
+    <script src="/js/ping.js"></script>
+    <script>
+        ping_interval("{{token}}");
+    </script>
 </body>
 </html>
