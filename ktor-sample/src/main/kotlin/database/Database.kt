@@ -7,6 +7,8 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
 
 private const val URL = "jdbc:h2:./games"
 private const val DRIVER = "org.h2.Driver"
@@ -15,6 +17,7 @@ fun Application.configureDatabase() {
     Database.connect(URL, driver = DRIVER)
 
     transaction {
+        addLogger(StdOutSqlLogger)
         //create the tables
         SchemaUtils.drop(Games, Users)
         SchemaUtils.create(Users, Games)
