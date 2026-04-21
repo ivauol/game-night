@@ -7,8 +7,8 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
-private const val URL = "jdbc:h2:./games"
-private const val DRIVER = "org.h2.Driver"
+private const val URL = "jdbc:sqlite:./src/main/resources/data/checkers.db"
+private const val DRIVER = "org.sqlite.JDBC"
 
 fun Application.configureDatabase() {
     Database.connect(URL, driver = DRIVER)
