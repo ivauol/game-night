@@ -170,6 +170,7 @@
                 <a href="/login?token={{token}}">Login</a>
                 <a href="/register?token={{token}}">Register</a>
             {% else %}
+                <a href="/stats?token={{token}}">Profile</a>
                 <form action="/logout" method="post" style="display:inline;">
                     <input type="hidden" name="token" value="{{ token }}">
                     <button class="play-btn" type="submit">Logout</button>

@@ -16,7 +16,8 @@ import io.ktor.util.*
 import java.security.SecureRandom
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.*
 
@@ -79,6 +80,68 @@ fun Application.configureRouting() {
             playerSessions[token] = session.copy(lastSeen = System.currentTimeMillis())
 
             call.displayRegister(token)
+        }
+
+        get("/stats"){
+            val token = call.request.queryParameters["token"]
+            ?: return@get call.respondRedirect("/gamecenter")
+            val session = playerSessions[token]
+            ?: return@get call.respondRedirect("/gamecenter")
+            val playerId = session.playerId
+
+            val (username, email) = transaction {
+                //var userDetails = Users.selectAll()
+                //.firstOrNull{it[Users.id].value == playerId}
+                var userDetails = Users.selectAll().where{Users.id eq playerId}.firstOrNull()          
+
+                if (userDetails != null){
+                    Pair(userDetails[Users.username], userDetails[Users.email])
+                }
+                else{
+                    Pair("", "")
+                }
+            }
+            if (username == ""){
+                return@get call.respondRedirect("/gamecenter")
+            }
+
+            val (totalGames, activeGames, wonGames) = transaction{
+                //var userGames = Games.selectAll()
+                //.filter{ it[Games.black_id].value == playerId || it[Games.white_id].value == playerId }
+                var userGames = Games.selectAll().where{(Games.black_id eq playerId) or (Games.white_id eq playerId)}
+
+                var total = 0
+                var active = 0
+                var won = 0
+                for (game in userGames){
+                    total += 1
+                    if (game[Games.status] == "active"){
+                        active += 1
+                    }
+                    if (game[Games.status] == "ended" && game[Games.winner_id] == playerId){
+                        won += 1
+                    }
+                }
+                Triple(total, active, won)
+            }
+
+            val winRate: Double
+            if (totalGames == activeGames){
+                winRate = 0.0
+            }
+            else{
+                winRate = wonGames.toDouble()/(totalGames.toDouble()-activeGames.toDouble())
+            }
+
+            call.respondTemplate("stats.peb", mapOf(
+                "token" to token, 
+                "username" to username, 
+                "email" to email,
+                "totalGames" to totalGames,
+                "activeGames" to activeGames,
+                "winRate" to "%.2f%%".format(winRate * 100)
+                ) as Map<String, Any>
+            )
         }
 
         get("/gamecenter"){
@@ -297,8 +360,8 @@ fun Application.configureRouting() {
                         //if opponent found, add new game to database
                         val gameId = transaction{
                             Games.insert {
-                                it[white_id] = EntityID(opponentId, Users)
-                                it[black_id] = EntityID(playerId, Users)
+                                it[white_id] = opponentId
+                                it[black_id] = playerId
                                 it[board] = ".b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b"
                                 it[history] = "{}"
                                 it[current] = "black"

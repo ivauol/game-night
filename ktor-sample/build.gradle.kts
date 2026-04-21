@@ -26,8 +26,8 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
 
     implementation("io.ktor:ktor-server-pebble:2.3.4")
-    implementation("org.jetbrains.exposed:exposed-core:0.61.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
+    implementation("org.jetbrains.exposed:exposed-core:0.53.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.53.0")
     implementation("com.h2database:h2:2.3.232")
     implementation("org.jetbrains.kotlinx:dataframe:1.0.0-Beta4")
     implementation("org.jetbrains.kotlinx:dataframe-csv:1.0.0-Beta4")

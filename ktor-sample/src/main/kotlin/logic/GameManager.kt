@@ -34,8 +34,13 @@ class GameManager(){
     fun createGame(game_id: Int, player_id: Int): Game?{
         return transaction {
             //select the game with the right id and ensure the player is in the game
-            val query = Games.selectAll()
-            .firstOrNull{(it[Games.id].value == game_id) && (it[Games.black_id].value == player_id || it[Games.white_id].value == player_id)}
+            val query = Games.selectAll().where{
+                (Games.id eq game_id) and (
+                    (Games.black_id eq player_id) or 
+                    (Games.white_id eq player_id)
+                )
+            }.firstOrNull()
+            //.firstOrNull{(it[Games.id].value == game_id) && (it[Games.black_id].value == player_id || it[Games.white_id].value == player_id)}
             if (query == null){return@transaction null}
 
             //convert the string in the database to a Json object, then to a mutable map
@@ -47,7 +52,7 @@ class GameManager(){
                 ?.let { Json.decodeFromString(it) }
                 ?: mutableMapOf()
 
-            Game(query[Games.black_id].value, query[Games.white_id].value, query[Games.current], query[Games.board], historyMap)
+            Game(query[Games.black_id], query[Games.white_id], query[Games.current], query[Games.board], historyMap)
         }
     }
 
@@ -65,14 +70,16 @@ class GameManager(){
             winner_id = 0
             if (winner == "black"){
                 winner_id = transaction{
-                    val query = Games.selectAll().first{it[Games.id].value == game_id}
-                    query[Games.black_id].value
+                    //val query = Games.selectAll().first{it[Games.id] == game_id}
+                    val query = Games.selectAll().where{Games.id eq game_id}.first()
+                    query[Games.black_id]
                 }
             }
             else {
                 winner_id = transaction{
-                    val query = Games.selectAll().first{it[Games.id].value == game_id}
-                    query[Games.white_id].value
+                    //val query = Games.selectAll().first{it[Games.id] == game_id}
+                    val query = Games.selectAll().where{Games.id eq game_id}.first()
+                    query[Games.white_id]
                 }
             }
         }
@@ -92,11 +99,12 @@ class GameManager(){
     //get every game containing a specific player
     fun getGames(playerId: Int, status: String?): MutableList<Int>{
         return transaction{
-            var query = Games.selectAll()
-            .filter{ it[Games.black_id].value == playerId || it[Games.white_id].value == playerId }
+            //var query = Games.selectAll().filter{ it[Games.black_id] == playerId || it[Games.white_id] == playerId }
+            var query = Games.selectAll().where{(Games.black_id eq playerId) or (Games.white_id eq playerId)}
 
             //filter by the correct status if necessary
-            if (status != null){ query = query.filter{ it[Games.status] == status }}
+            if (status != null){ //query = query.filter{ it[Games.status] == status }
+            query.andWhere{Games.status eq status}}
 
             var results = mutableListOf<Int>()
             for (game in query){
