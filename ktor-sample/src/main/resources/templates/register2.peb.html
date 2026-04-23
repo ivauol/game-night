@@ -159,11 +159,16 @@
 <form action="/register2" method="POST">
     <div class="flex-container">
         <div class="form-container">
+
+            {% if message %}
+            <p style="color:red">{{ message }}</p>
+            {% endif %}
+
             <h1>CREATE ACCOUNT</h1>
             <p>Already have an account? <a href="/login2">Log in</a></p>
 
             <label for="email"><b>EMAIL</b></label>
-            <input type="text" placeholder="Enter Email" name="email" required>
+            <input type="text" placeholder="Enter Email" name="email" required autofocus>
 
             <label for="username"><b>USERNAME</b></label>
             <input type="text" placeholder="Enter Username" name="username" required>
@@ -173,7 +178,8 @@
 
             <button type="submit">REGISTER</button>
         </div>
+    </div>
 </form>
-</div>
+
 </body>
 </html>
