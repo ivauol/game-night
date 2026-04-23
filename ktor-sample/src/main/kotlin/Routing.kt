@@ -93,8 +93,7 @@ fun Application.configureRouting() {
             }
             else {
                 // or start the session here I think
-                // val session = call.sessions.get<PlayerSession>() ?: return@post call.respondRedirect("/login2?message=Invalid%20user")
-                // call.sessions.set<PlayerSession>(PlayerSession(playerId=session.playerId, gameId=session.gameId))
+                call.sessions.set(PlayerSession(playerId=user!!.id.value, gameId=1))
                 return@post call.respondRedirect("/success")
                 // actually redirect to the game centre page?
             }
@@ -129,6 +128,15 @@ fun Application.configureRouting() {
             playerSessions[token] = session.copy(lastSeen = System.currentTimeMillis())
 
             call.displayRegister(token)
+        }
+
+        get("/logout") {
+            call.sessions.clear<PlayerSession>()
+            call.respondRedirect("/loggedout")
+        }
+
+        get("/loggedout") {
+            call.respondTemplate("loggedout.peb.html", mapOf())
         }
 
         get("/gamecenter"){
