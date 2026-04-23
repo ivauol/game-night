@@ -18,6 +18,8 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.*
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.selectAll
 
 //store player session
@@ -50,8 +52,9 @@ fun Application.configureRouting() {
             val username = params.getOrFail("username")
             val password = params.getOrFail("password")
 
-            var user: User? = null
+            var user: User? = null // create user before transaction block
             transaction {
+                addLogger(StdOutSqlLogger)
                 user = Users.selectAll().where { Users.username eq username }.singleOrNull()
                     ?.let {
                         User(
@@ -61,8 +64,6 @@ fun Application.configureRouting() {
                         )
                     }
             }
-
-            println(user)
 
             if (user == null){
                 return@post call.respondRedirect("/login2?message=Invalid%20user")
@@ -85,6 +86,55 @@ fun Application.configureRouting() {
                 return@get call.respondRedirect("/login2")
             }
             call.respondTemplate("success.peb.html", mapOf())
+        }
+
+        get("/register2") {
+            val message = call.request.queryParameters["message"] ?: ""
+            call.respondTemplate("register2.peb.html", mapOf("message" to message))
+        }
+
+        // TO-DO: lowercase usernames?
+
+        post("/register2") {
+            val params = call.receiveParameters()
+            val givenEmail = params.getOrFail("email")
+            val givenUsername = params.getOrFail("username")
+            val givenPass = params.getOrFail("password")
+
+            if (givenEmail.trim() == "" || givenUsername.trim() == "" || givenPass.trim() == "") {
+                return@post call.respondRedirect("/register2?message=Please%20fill%20all%20fields.")
+            }
+
+            // TO-DO: within a single transaction:
+            // 1: check user doesn't already exist (DONE)
+            // 2: insert new record (DONE)
+
+            var userExists = false
+            var userId : EntityID<Int>? = null
+
+            transaction {
+                addLogger(StdOutSqlLogger)
+
+                val user = Users.selectAll().where { Users.username eq givenUsername }.singleOrNull()
+
+                if (user != null) {
+                    userExists = true
+                    return@transaction
+                }
+
+                userId = Users.insert {
+                    it[username] = givenUsername
+                    it[password] = Hasher.hashPassword(givenPass)
+                    it[email] = givenEmail
+                } get Users.id
+            }
+
+            if (userExists) {
+                return@post call.respondRedirect("/register2?message=User%20exists.")
+            }
+
+            call.sessions.set(PlayerSession(playerId=userId!!.value, gameId=1))
+            return@post call.respondRedirect("/regsuccess")
         }
 
         //load the login page 
@@ -174,6 +224,15 @@ fun Application.configureRouting() {
 
         get("/loggedout") {
             call.respondTemplate("loggedout.peb.html", mapOf())
+        }
+
+        get("/regsuccess") {
+            val session = call.sessions.get<PlayerSession>()
+            if (session == null) { // if there's no session
+                println("No session!")
+                return@get call.respondRedirect("/register2")
+            }
+            call.respondTemplate("registersuccess.peb.html", mapOf())
         }
 
         get("/gamecenter"){
