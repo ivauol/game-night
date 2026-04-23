@@ -49,7 +49,7 @@ fun Application.configureDatabase() {
 //users table
 object Users : IntIdTable() {
     val username = varchar("username", 32)
-    val password = varchar("password", 32)
+    val password = varchar("password", 128)
     val email = varchar("email", 50).uniqueIndex()
 }
 

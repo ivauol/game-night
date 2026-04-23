@@ -91,12 +91,14 @@ fun Application.configureRouting() {
             if (user == null){
                 return@post call.respondRedirect("/login2?message=Invalid%20user")
             }
-            else {
-                // or start the session here I think
-                call.sessions.set(PlayerSession(playerId=user!!.id.value, gameId=1))
-                return@post call.respondRedirect("/success")
-                // actually redirect to the game centre page?
+
+            if (!Hasher.verifyPassword(password, user!!.password)) {
+                return@post call.respondRedirect("/login2?message=Invalid%20user")
             }
+
+            call.sessions.set(PlayerSession(playerId=user!!.id.value, gameId=1))
+            return@post call.respondRedirect("/success")
+            // actually redirect to the game centre page
         }
 
         // temp page for checking
