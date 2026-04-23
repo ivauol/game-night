@@ -4,7 +4,6 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.pebble.respondTemplate
-import io.ktor.http.Parameters
 import io.ktor.server.request.receiveParameters
 import io.ktor.http.HttpStatusCode
 import io.ktor.websocket.*
@@ -13,14 +12,12 @@ import io.ktor.server.http.content.*
 import io.ktor.server.sessions.*
 import io.ktor.server.util.getOrFail
 import kotlinx.serialization.Serializable
-import io.ktor.util.*
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.selectAll
 
 //store player session
@@ -52,15 +49,13 @@ fun Application.configureRouting() {
             val params = call.receiveParameters()
             val username = params.getOrFail("username")
             val password = params.getOrFail("password")
-            // TO-DO: find if user is in database
 
             var user: User? = null
             transaction {
                 user = Users.selectAll().where { Users.username eq username }.singleOrNull()
                     ?.let {
                         User(
-                            //id=it[Users.id],
-                            // TO-DO: fix id type issue?
+                            id=it[Users.id],
                             username=it[Users.username],
                             password=it[Users.password]
                         )
@@ -72,6 +67,23 @@ fun Application.configureRouting() {
             if (user == null){
                 return@post call.respondRedirect("/login2?message=Invalid%20user")
             }
+            else {
+                // or start the session here I think
+                // val session = call.sessions.get<PlayerSession>() ?: return@post call.respondRedirect("/login2?message=Invalid%20user")
+                // call.sessions.set<PlayerSession>(PlayerSession(playerId=session.playerId, gameId=session.gameId))
+                return@post call.respondRedirect("/success")
+                // actually redirect to the game centre page?
+            }
+        }
+
+        // temp page for checking
+        get("/success") {
+            val session = call.sessions.get<PlayerSession>()
+            if (session == null) { // if there's no session
+                println("No session!")
+                return@get call.respondRedirect("/login2")
+            }
+            call.respondTemplate("success.peb.html", mapOf())
         }
 
         //load the login page 
@@ -383,7 +395,7 @@ fun Application.configureRouting() {
         }
     }
 }
- 
+
 private suspend fun ApplicationCall.displayHome() {
     respondTemplate("welcomepage.peb", mapOf())
 }
