@@ -26,7 +26,6 @@ class GameManager(){
         if (!game.validateMove(move, playerColour)){return MoveResponse(false, "Invalid move")}
         game.makeMove(move)
         this.updateGame(game, game_id)
-        saveToCSV()
         return MoveResponse(true, "Move successful", game.boardState, game.winCheck(game.current))
     }
 
