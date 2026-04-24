@@ -26,10 +26,10 @@ function previewMove(){
     //convert all selected squares into proper notation
     for (let square of window.squares) {
         const row = Math.floor(square / 10);
-        const col = square % 10;
+        const col = (square % 10) - 1;
 
         const letter = String.fromCharCode("A".charCodeAt(0) + col);
-        const number = row + 1;
+        const number = row;
 
         parts.push(letter + number);
     }
@@ -106,7 +106,7 @@ function winCheck(player) {
 function handleSquareClick(row, col, cell) {
     //prevent duplicate last click
     const last = window.squares[window.squares.length - 1];
-    if (last === row*10 + col) return;
+    if (last === row*10 + col + 11) return;
 
     //if it isnt the players turn to move or the game is over
     if (window.player != window.current || window.winner != "") return;
@@ -125,7 +125,7 @@ function handleSquareClick(row, col, cell) {
         }
     }
 
-    window.squares.push(row*10 + col);
+    window.squares.push(row*10 + col + 11);
 
     cell.style.outline = "3px solid yellow";
     previewMove();
