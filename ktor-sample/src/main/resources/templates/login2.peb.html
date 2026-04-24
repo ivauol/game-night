@@ -140,6 +140,7 @@
     </style>
 </head>
 <body>
+
 <div class="glow"></div>
 
 <div class="icon-bar">
@@ -154,15 +155,15 @@
             {% if message %}
             <p style="color:red">{{ message }}</p>
             {% endif %}
+            <input id="username" type="text" placeholder="Enter Username" name="username" required autofocus>
             <label for="username"><b>USERNAME</b></label>
-            <input type="text" placeholder="Enter Username" name="username" required autofocus>
 
+            <input id="password" type="password" placeholder="Enter Password" name="password" required>
             <label for="password"><b>PASSWORD</b></label>
-            <input type="password" placeholder="Enter Password" name="password" required>
 
             <button type="submit">LOGIN</button>
 
-            <p class="signup-text">Don't have an account? <a href="/register">Register</a></p>
+            <p class="signup-text">Don't have an account? <a href="/register2">Register</a></p>
         </div>
     </div>
 </form>
