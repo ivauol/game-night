@@ -234,7 +234,7 @@ fun Application.configureRouting() {
             val playerId = session.playerId
             val moveInput = params["move"] ?: return@post call.respondText("Move not provided")
 
-            //convert from standard move notation to a list of positions
+            //convert to a list of positions
             val moveList = moveInput.split(",").map { square ->
                 val row = square[0].digitToInt()
                 val col = square[1].digitToInt()
