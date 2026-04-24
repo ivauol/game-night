@@ -231,6 +231,7 @@
     </div>
 
     <script>
+        //define global variables
         window.squares = [];
         window.player = "";
         if ({{black}} == {{playerId}}){
@@ -246,17 +247,18 @@
 
     <script src = "/js/game.js"></script>
 
-    {# Update other players #}
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const boardString = "{{ boardString }}";
 
+            //prepare all visual elements on load
             const board = parseBoardString(boardString);
             updateBoardHTML(board);
             currentPlayer("{{current}}");
             winCheck(winner);
             buttonVisible();
 
+            //set up a button in each cell on load
             const table = document.querySelector(".checkers-board");
             for (let i = 0; i <= 7; i++) {
                 for (let j = 0; j <= 7; j++) {
@@ -270,24 +272,21 @@
             //open a new connection
             const socket = new WebSocket("ws://localhost:8080/gamews?token={{session}}");
             socket.onopen = () => console.log("WebSocket connected");
-            //reload the page if any changes have occurred
+            //update the page if any changes have occurred
             socket.onmessage = (event) => {
                 console.log("Received:", event.data);
                 const parts = event.data.split(",")
                 const newBoard = parseBoardString(parts[0]);
                 updateBoardHTML(newBoard);
                 currentPlayer(parts[2]);
-                current = parts[2];
+                window.current = parts[2];
                 
-                winner = winCheck(parts[1]);
+                window.winner = winCheck(parts[1]);
                 buttonVisible();
             };
 
-            document.getElementById("submitMoveBtn")
-                .addEventListener("click", submitMove);
-
-            document.getElementById("clearMoveBtn")
-                .addEventListener("click", clearSelection);
+            document.getElementById("submitMoveBtn").addEventListener("click", submitMove);
+            document.getElementById("clearMoveBtn").addEventListener("click", clearSelection);
         });
     </script>
     <script src="/js/ping.js"></script>

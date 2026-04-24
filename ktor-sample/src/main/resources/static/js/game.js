@@ -1,3 +1,4 @@
+//show the submit move and clear buttons if its the players turn and the game isnt over
 function buttonVisible(){
     const submit = document.getElementById("submitMoveBtn");
     const clear = document.getElementById("clearMoveBtn");
@@ -11,6 +12,7 @@ function buttonVisible(){
     }
 }
 
+//show the player what the current move they are attempting to make is
 function previewMove(){
     const preview = document.getElementById("movePreview");
 
@@ -21,6 +23,7 @@ function previewMove(){
 
     let parts = [];
 
+    //convert all selected squares into proper notation
     for (let square of window.squares) {
         const row = Math.floor(square / 10);
         const col = square % 10;
@@ -47,6 +50,7 @@ function parseBoardString(str) {
     return board;
 }
 
+//fill the board with pieces on squares
 function updateBoardHTML(board) {
     const table = document.querySelector(".checkers-board");
     for (let i = 0; i < 8; i++) {
@@ -92,17 +96,22 @@ function winCheck(player) {
         winnerDiv.style.marginTop = "20px";
         winnerDiv.innerText = player + " wins!";
         document.body.appendChild(winnerDiv);
+
         return player;
     }
+    return "";
 }
 
+//if a square is clicked for a movement option
 function handleSquareClick(row, col, cell) {
-    // prevent duplicate last click
+    //prevent duplicate last click
     const last = window.squares[window.squares.length - 1];
     if (last === row*10 + col) return;
 
+    //if it isnt the players turn to move or the game is over
     if (window.player != window.current || window.winner != "") return;
 
+    //if the players first selected square isn't one of their pieces
     if (window.squares.length === 0){
         if (window.player === "white"){
             if (cell.innerHTML !== '<div class="piece white-piece"></div>' && cell.innerHTML !== '<div class="piece white-piece king"></div>'){
@@ -118,13 +127,11 @@ function handleSquareClick(row, col, cell) {
 
     window.squares.push(row*10 + col);
 
-    // visual feedback
     cell.style.outline = "3px solid yellow";
     previewMove();
-
-    console.log("Squares:", window.squares);
 }
 
+//submit the move
 async function submitMove() {
     if (window.squares.length < 2) return;
 
@@ -146,6 +153,7 @@ async function submitMove() {
     }
 }
 
+//clear the current move
 function clearSelection() {
     window.squares = [];
 

@@ -130,11 +130,6 @@ class Game(val black_id: Int, val white_id: Int, var current: String = "black", 
 
     //check that the move that was sent is allowed to be played
     fun validateMove(move: MutableList<Array<Int>>, player: String): Boolean{
-        for (thing in move){
-            println(thing[0])
-            println(thing[1])
-            println()
-        }
         val tempBoard = this.board.map { it.clone() }.toTypedArray()
         //check that the current players owns the piece on the start square
         val x = move[0][0]
@@ -147,7 +142,7 @@ class Game(val black_id: Int, val white_id: Int, var current: String = "black", 
             println("Invalid Piece")
             return false
         }
-        val forceTest = this.forcedCaptures(player) && move.size == 2
+        val forceTest = this.forcedCaptures(player) || move.size != 2
         var capture = false
         //run over each transition in the sequence
         for (i in 0..move.size-2){
