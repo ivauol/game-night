@@ -78,7 +78,6 @@ fun Application.configureRouting() {
 
             var user: User? = null // create user before transaction block
             transaction {
-                addLogger(StdOutSqlLogger)
                 user = Users.selectAll().where { Users.username eq username }.singleOrNull()
                     ?.let {
                         User(
@@ -105,7 +104,7 @@ fun Application.configureRouting() {
         // temp page for checking
         get("/success") {
             val session = call.sessions.get<PlayerSession>()
-            if (session == null) { // if there's no session
+            if (session == null) {
                 println("No session!")
                 return@get call.respondRedirect("/login2")
             }
@@ -129,15 +128,10 @@ fun Application.configureRouting() {
                 return@post call.respondRedirect("/register2?message=Please%20fill%20all%20fields.")
             }
 
-            // TO-DO: within a single transaction:
-            // 1: check user doesn't already exist (DONE)
-            // 2: insert new record (DONE)
-
             var userExists = false
             var userId : EntityID<Int>? = null
 
             transaction {
-                addLogger(StdOutSqlLogger)
 
                 val user = Users.selectAll().where { Users.username eq givenUsername }.singleOrNull()
 
@@ -193,7 +187,7 @@ fun Application.configureRouting() {
 
         get("/regsuccess") {
             val session = call.sessions.get<PlayerSession>()
-            if (session == null) { // if there's no session
+            if (session == null) {
                 println("No session!")
                 return@get call.respondRedirect("/register2")
             }
