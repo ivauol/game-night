@@ -236,8 +236,8 @@ fun Application.configureRouting() {
 
             //convert from standard move notation to a list of positions
             val moveList = moveInput.split(",").map { square ->
-                val col = square[0] - 'A'
-                val row = square[1].digitToInt() - 1
+                val row = square[0].digitToInt()
+                val col = square[1].digitToInt()
                 arrayOf(row, col)
             }.toMutableList()
 

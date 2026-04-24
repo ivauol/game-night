@@ -223,86 +223,49 @@
     </div>
 
     <p id="errorBox" style="text-align:center"></p>
+    <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
 
-    {#move making option#}
-    <form id="moveForm" action="/move" method="post" style="justify-content:center; margin-top:180px;">
-        <input type="hidden" name="token" value="{{ session }}">
-        <label for="move">Enter move:</label>
-        <input type="text" name="move" id="move">
-        <button type="submit">Submit Move</button>
-    </form>
+    <div style="text-align:center; margin-top:10px;">
+        <button type="button" id="submitMoveBtn">Submit Move</button>
+        <button type="button" id="clearMoveBtn">Clear</button>
+    </div>
+
+    <script>
+        window.squares = [];
+        window.player = "";
+        if ({{black}} == {{playerId}}){
+            window.player = "black";
+        }
+        else if ({{white}} == {{playerId}}){
+            window.player = "white";
+        }
+        window.current = "{{current}}";
+        window.winner = "{{winner}}";
+        window.token = "{{session}}";
+    </script>
+
+    <script src = "/js/game.js"></script>
+
     {# Update other players #}
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const boardString = "{{ boardString }}";
 
-            //turn the board string into a 2D board
-            function parseBoardString(str) {
-                const board = [];
-                for (let i = 0; i < 8; i++) {
-                    const row = [];
-                    for (let j = 0; j < 8; j++) {
-                        row.push(str[i*8 + j]);
-                    }
-                    board.push(row);
-                }
-                return board;
-            }
-
-            function updateBoardHTML(board) {
-                const table = document.querySelector(".checkers-board");
-                for (let i = 0; i < 8; i++) {
-                    for (let j = 0; j < 8; j++) {
-                        const cell = table.rows[i + 1].cells[j + 1];
-                        const piece = board[i][j];
-                        if (piece === "w") {
-                            cell.innerHTML = '<div class="piece white-piece"></div>';
-                        } else if (piece === "b") {
-                            cell.innerHTML = '<div class="piece black-piece"></div>';
-                        } else if (piece === "W") {
-                            cell.innerHTML = '<div class="piece white-piece king"></div>';
-                        } else if (piece === "B") {
-                            cell.innerHTML = '<div class="piece black-piece king"></div>';
-                        } else {
-                            cell.innerHTML = "";
-                        }
-                    }
-                }
-            }
-
-            //highlight whos turn it is
-            function currentPlayer(turn) {
-                const black = document.getElementById("blackId");
-                const white = document.getElementById("whiteId");
-
-                if (turn === "black") {
-                    black.style.fontWeight = "bold";
-                    white.style.fontWeight = "normal";
-                } else {
-                    white.style.fontWeight = "bold";
-                    black.style.fontWeight = "normal";
-                }
-            }
-
-            //check for win
-            function winCheck(player) {
-                if (player !== "") {
-                    const form = document.getElementById("moveForm");
-                    form.parentNode.removeChild(form);
-
-                    const winnerDiv = document.createElement("div");
-                    winnerDiv.style.textAlign = "center";
-                    winnerDiv.style.fontSize = "24px";
-                    winnerDiv.style.marginTop = "20px";
-                    winnerDiv.innerText = player + " wins!";
-                    document.body.appendChild(winnerDiv);
-                }
-            }
-
             const board = parseBoardString(boardString);
             updateBoardHTML(board);
-            currentPlayer("{{current}}")
-            winCheck("{{winner}}")
+            currentPlayer("{{current}}");
+            winCheck(winner);
+            buttonVisible();
+
+            const table = document.querySelector(".checkers-board");
+            for (let i = 0; i <= 7; i++) {
+                for (let j = 0; j <= 7; j++) {
+                    const cell = table.rows[i+1].cells[j+1];
+                    cell.addEventListener("click", () => {
+                        handleSquareClick(i, j, cell);
+                    });
+                }
+            }
 
             //open a new connection
             const socket = new WebSocket("ws://localhost:8080/gamews?token={{session}}");
@@ -313,30 +276,19 @@
                 const parts = event.data.split(",")
                 const newBoard = parseBoardString(parts[0]);
                 updateBoardHTML(newBoard);
-                currentPlayer(parts[2])
+                currentPlayer(parts[2]);
+                current = parts[2];
                 
-                winCheck(parts[1])
+                winner = winCheck(parts[1]);
+                buttonVisible();
             };
-        });
 
-    //make a move without reloading
-    const form = document.getElementById("moveForm");
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const response = await fetch("/move", {
-            method: "POST",
-            body: formData
+            document.getElementById("submitMoveBtn")
+                .addEventListener("click", submitMove);
+
+            document.getElementById("clearMoveBtn")
+                .addEventListener("click", clearSelection);
         });
-        const errorBox = document.getElementById("errorBox");
-        if (!response.ok) {
-            const text = await response.text();
-            errorBox.innerText = text;
-        }
-        else {
-            errorBox.innerText = "";
-        }
-    });
     </script>
     <script src="/js/ping.js"></script>
     <script>
