@@ -142,7 +142,7 @@ class Game(val black_id: Int, val white_id: Int, var current: String = "black", 
             println("Invalid Piece")
             return false
         }
-        val forceTest = this.forcedCaptures(player) && move.size == 2
+        val forceTest = this.forcedCaptures(player) || move.size != 2
         var capture = false
         //run over each transition in the sequence
         for (i in 0..move.size-2){
