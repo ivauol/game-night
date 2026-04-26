@@ -1,9 +1,5 @@
 <body>
-    <a href="/search?token={{ token }}&status=active">Active Games</a>
-    <a href="/search?token={{ token }}&status=ended">Ended Games</a>
-    <a href="/wait?token={{ token }}">Make New Game</a>
-    <script src="/js/ping.js"></script>
-    <script>
-        ping_interval("{{token}}");
-    </script>
+    <a href="/search?status=active">Active Games</a>
+    <a href="/search?status=ended">Ended Games</a>
+    <a href="/wait">Make New Game</a>
 </body>

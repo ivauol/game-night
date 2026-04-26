@@ -4,8 +4,3 @@
 <p>Total games: {{totalGames}}</p>
 <p>Active games: {{activeGames}}</p>
 <p>Win rate: {{winRate}}</p>
-
-<script src="/js/ping.js"></script>
-<script>
-    ping_interval("{{token}}");
-</script>
