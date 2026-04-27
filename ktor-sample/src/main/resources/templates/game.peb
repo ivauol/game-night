@@ -186,7 +186,7 @@
     <div class="glow"></div>
 
     <div class="icon-bar">
-        <a class="active" href="/gamecenter?token={{session}}"><i class="fa fa-home"></i></a>
+        <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
     </div>
 
     {#display black's id#}
@@ -242,7 +242,7 @@
         }
         window.current = "{{current}}";
         window.winner = "{{winner}}";
-        window.token = "{{session}}";
+        window.gameId = "{{gameId}}";
     </script>
 
     <script src = "/js/game.js"></script>
@@ -255,7 +255,7 @@
             const board = parseBoardString(boardString);
             updateBoardHTML(board);
             currentPlayer("{{current}}");
-            winCheck(winner);
+            winCheck("{{winner}}");
             buttonVisible();
 
             //set up a button in each cell on load
@@ -270,7 +270,7 @@
             }
 
             //open a new connection
-            const socket = new WebSocket("ws://localhost:8080/gamews?token={{session}}");
+            const socket = new WebSocket(`ws://${window.location.host}/gamews?gameId={{gameId}}`);
             socket.onopen = () => console.log("WebSocket connected");
             //update the page if any changes have occurred
             socket.onmessage = (event) => {
@@ -288,9 +288,5 @@
             document.getElementById("submitMoveBtn").addEventListener("click", submitMove);
             document.getElementById("clearMoveBtn").addEventListener("click", clearSelection);
         });
-    </script>
-    <script src="/js/ping.js"></script>
-    <script>
-        ping_interval("{{session}}");
     </script>
 </body>

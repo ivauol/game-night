@@ -5,16 +5,11 @@
                 Game ID: {{ game }}
                 <form action="/join" method="post" style="display:inline;">
                     <input type="hidden" name="gameId" value="{{ game }}">
-                    <input type="hidden" name="token" value="{{ token }}">
                     <button type="submit">Join Game</button>
                 </form>
             </li>
         {% endfor %}
     </ul>
 
-    <a href="/">Back to Home</a>
-    <script src="/js/ping.js"></script>
-    <script>
-        ping_interval("{{token}}");
-    </script>
+    <a href="/gamecenter">Back to Home</a>
 </body>

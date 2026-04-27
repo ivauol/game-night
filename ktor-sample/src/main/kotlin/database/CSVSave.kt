@@ -16,9 +16,9 @@ fun saveToCSV() {
         //write each game line by line
         games.forEach { row ->
             val line = listOf(
-                row[Games.id].value,
-                row[Games.black_id].value,
-                row[Games.white_id].value,
+                row[Games.id],
+                row[Games.black_id],
+                row[Games.white_id],
                 row[Games.board],
                 //so that there are no trip ups from " in bad places
                 row[Games.history].replace("\"", "$").replace(",", "|"),
@@ -26,7 +26,7 @@ fun saveToCSV() {
                 row[Games.start_time],
                 row[Games.end_time] ?: "",
                 row[Games.status],
-                row[Games.winner_id]?.value ?: ""
+                row[Games.winner_id] ?: ""
             ).joinToString(",")
             out.println(line)
         }

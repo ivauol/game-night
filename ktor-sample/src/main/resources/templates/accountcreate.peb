@@ -159,7 +159,7 @@
     <div class="flex-container">
         <div class="form-container">
             <h1>CREATE ACCOUNT</h1>
-            <p>Already have an account? <a href="/login?token={{token}}">Log in</a></p>
+            <p>Already have an account? <a href="/login">Log in</a></p>
 
             <label for="fname"><b>FIRST NAME</b></label>
             <input type="text" placeholder="Enter First Name" name="fname" required>
@@ -179,9 +179,5 @@
             <button type="submit">REGISTER</button>
         </div>
     </div>
-    <script src="/js/ping.js"></script>
-    <script>
-        ping_interval("{{token}}");
-    </script>
 </body>
 </html>

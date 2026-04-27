@@ -136,7 +136,7 @@ async function submitMove() {
     if (window.squares.length < 2) return;
 
     const formData = new FormData();
-    formData.append("token", window.token);
+    formData.append("gameId", window.gameId);
     formData.append("move", window.squares.join(","));
 
     const response = await fetch("/move", {
