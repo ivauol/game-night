@@ -35,6 +35,8 @@ dependencies {
     implementation("io.ktor:ktor-server-websockets:2.3.4")
     implementation("io.ktor:ktor-server-sessions:2.3.4")
 
+    implementation("at.favre.lib:bcrypt:0.10.2")
+
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 }

@@ -4,21 +4,25 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.pebble.respondTemplate
-import io.ktor.http.Parameters
 import io.ktor.server.request.receiveParameters
 import io.ktor.http.HttpStatusCode
 import io.ktor.websocket.*
 import io.ktor.server.websocket.*
 import io.ktor.server.http.content.*
 import io.ktor.server.sessions.*
+import io.ktor.server.util.getOrFail
 import kotlinx.serialization.Serializable
 import io.ktor.util.*
+import java.security.SecureRandom
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.*
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.selectAll
 
 //store player session
 @Serializable
@@ -34,6 +38,99 @@ fun Application.configureRouting() {
         get("/") {
             call.respondTemplate("base.peb", mapOf())
             //call.displayHome()
+        }
+
+        get("/home") {
+            call.respondTemplate("home.peb.html", mapOf())
+        }
+
+        get("/login2") {
+            val message = call.request.queryParameters["message"] ?: ""
+            call.respondTemplate("login2.peb.html", mapOf("message" to message))
+        }
+
+        post("/login2") {
+            val params = call.receiveParameters()
+            val username = params.getOrFail("username")
+            val password = params.getOrFail("password")
+
+            var user: User? = null // create user before transaction block
+            transaction {
+                user = Users.selectAll().where { Users.username eq username }.singleOrNull()
+                    ?.let {
+                        User(
+                            id=it[Users.id],
+                            username=it[Users.username],
+                            password=it[Users.password]
+                        )
+                    }
+            }
+
+            if (user == null){
+                return@post call.respondRedirect("/login2?message=Invalid%20user")
+            }
+
+            if (!Hasher.verifyPassword(password, user!!.password)) {
+                return@post call.respondRedirect("/login2?message=Invalid%20user")
+            }
+
+            call.sessions.set(PlayerSession(playerId=user!!.id.value, gameId=1))
+            return@post call.respondRedirect("/success")
+            // actually redirect to the game centre page
+        }
+
+        // temp page for checking
+        get("/success") {
+            val session = call.sessions.get<PlayerSession>()
+            if (session == null) {
+                println("No session!")
+                return@get call.respondRedirect("/login2")
+            }
+            call.respondTemplate("success.peb.html", mapOf())
+        }
+
+        get("/register2") {
+            val message = call.request.queryParameters["message"] ?: ""
+            call.respondTemplate("register2.peb.html", mapOf("message" to message))
+        }
+
+        // TO-DO: lowercase usernames?
+
+        post("/register2") {
+            val params = call.receiveParameters()
+            val givenEmail = params.getOrFail("email")
+            val givenUsername = params.getOrFail("username")
+            val givenPass = params.getOrFail("password")
+
+            if (givenEmail.trim() == "" || givenUsername.trim() == "" || givenPass.trim() == "") {
+                return@post call.respondRedirect("/register2?message=Please%20fill%20all%20fields.")
+            }
+
+            var userExists = false
+            var userId : EntityID<Int>? = null
+
+            transaction {
+
+                val user = Users.selectAll().where { Users.username eq givenUsername }.singleOrNull()
+
+                if (user != null) {
+                    userExists = true
+                    return@transaction
+                }
+
+                userId = Users.insert {
+                    it[username] = givenUsername
+                    it[password] = Hasher.hashPassword(givenPass)
+                    it[email] = givenEmail
+                } get Users.id
+            }
+
+            if (userExists) {
+                return@post call.respondRedirect("/register2?message=User%20exists.")
+            }
+
+            call.sessions.set(PlayerSession(playerId=userId!!.value, gameId=1))
+            return@post call.respondRedirect("/regsuccess")
         }
 
         //load the login page 
@@ -114,6 +211,24 @@ fun Application.configureRouting() {
                 "winRate" to "%.2f%%".format(winRate * 100)
                 ) as Map<String, Any>
             )
+        }
+
+        get("/logout") {
+            call.sessions.clear<PlayerSession>()
+            call.respondRedirect("/loggedout")
+        }
+
+        get("/loggedout") {
+            call.respondTemplate("loggedout.peb.html", mapOf())
+        }
+
+        get("/regsuccess") {
+            val session = call.sessions.get<PlayerSession>()
+            if (session == null) {
+                println("No session!")
+                return@get call.respondRedirect("/register2")
+            }
+            call.respondTemplate("registersuccess.peb.html", mapOf())
         }
 
         get("/gamecenter"){
@@ -320,7 +435,7 @@ fun Application.configureRouting() {
         }
     }
 }
- 
+
 private suspend fun ApplicationCall.displayHome() {
     respondTemplate("welcomepage.peb", mapOf())
 }

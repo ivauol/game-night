@@ -7,6 +7,9 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
 
 private const val URL = "jdbc:sqlite:./src/main/resources/data/checkers.db"
 private const val DRIVER = "org.sqlite.JDBC"
@@ -27,6 +30,16 @@ fun Application.configureDatabase() {
                     it[password] = record.password
                     it[email] = record.email
                 }
+        addLogger(StdOutSqlLogger)
+        //create the tables
+        SchemaUtils.drop(Games, Users)
+        SchemaUtils.create(Users, Games)
+        //insert all users into exposed database
+        hydrateUsers().forEach { record ->
+            Users.insert {
+                it[username] = record.username
+                it[password] = record.password
+                it[email] = record.email
             }
             //insert all games into exposed database
             hydrateGames().forEach { record ->
@@ -48,8 +61,8 @@ fun Application.configureDatabase() {
 
 //users table
 object Users : IntIdTable() {
-    val username = varchar("username", 32)
-    val password = varchar("password", 32)
+    val username = varchar("username", 32).uniqueIndex()
+    val password = varchar("password", 128)
     val email = varchar("email", 50).uniqueIndex()
 }
 

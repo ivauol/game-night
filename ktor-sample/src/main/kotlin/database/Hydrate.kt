@@ -59,7 +59,7 @@ fun hydrateUsers(): List<UserRecord> {
         .map { row ->
             UserRecord(
                 username = row["username"].parseCell()!!,
-                password = row["password"].parseCell()!!,
+                password = Hasher.hashPassword(row["password"].parseCell()!!),
                 email = row["email"].parseCell()!!,
                 )
         }
