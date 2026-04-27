@@ -21,6 +21,7 @@ fun Application.configureDatabase() {
 
     transaction {
         if (!db.exists()){
+            addLogger(StdOutSqlLogger)
             //create the tables
             SchemaUtils.create(Users, Games)
             //insert all users into exposed database
@@ -30,16 +31,6 @@ fun Application.configureDatabase() {
                     it[password] = record.password
                     it[email] = record.email
                 }
-        addLogger(StdOutSqlLogger)
-        //create the tables
-        SchemaUtils.drop(Games, Users)
-        SchemaUtils.create(Users, Games)
-        //insert all users into exposed database
-        hydrateUsers().forEach { record ->
-            Users.insert {
-                it[username] = record.username
-                it[password] = record.password
-                it[email] = record.email
             }
             //insert all games into exposed database
             hydrateGames().forEach { record ->

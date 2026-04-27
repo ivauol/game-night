@@ -23,6 +23,7 @@ import kotlinx.coroutines.*
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.dao.id.EntityID
 
 //store player session
 @Serializable
@@ -36,8 +37,9 @@ fun Application.configureRouting() {
         staticResources("/js", "static/js")
 
         get("/") {
-            call.respondTemplate("base.peb", mapOf())
+            //call.respondTemplate("base.peb", mapOf())
             //call.displayHome()
+            return@get call.respondRedirect("/gamecenter")
         }
 
         get("/home") {
@@ -74,8 +76,8 @@ fun Application.configureRouting() {
                 return@post call.respondRedirect("/login2?message=Invalid%20user")
             }
 
-            call.sessions.set(PlayerSession(playerId=user!!.id.value, gameId=1))
-            return@post call.respondRedirect("/success")
+            call.sessions.set(PlayerSession(playerId=user!!.id.value))
+            return@post call.respondRedirect("/gamecenter")
             // actually redirect to the game centre page
         }
 
@@ -129,8 +131,8 @@ fun Application.configureRouting() {
                 return@post call.respondRedirect("/register2?message=User%20exists.")
             }
 
-            call.sessions.set(PlayerSession(playerId=userId!!.value, gameId=1))
-            return@post call.respondRedirect("/regsuccess")
+            call.sessions.set(PlayerSession(playerId=userId!!.value))
+            return@post call.respondRedirect("/gamecenter")
         }
 
         //load the login page 
