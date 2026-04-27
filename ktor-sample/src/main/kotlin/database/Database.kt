@@ -19,30 +19,31 @@ fun Application.configureDatabase() {
     Database.connect(URL, driver = DRIVER)
 
     transaction {
-        addLogger(StdOutSqlLogger)
-        //create the tables
-        SchemaUtils.drop(Games, Users)
-        SchemaUtils.create(Users, Games)
-        //insert all users into exposed database
-        hydrateUsers().forEach { record ->
-            Users.insert {
-                it[username] = record.username
-                it[password] = record.password
-                it[email] = record.email
+        if (!db.exists()){
+            addLogger(StdOutSqlLogger)
+            //create the tables
+            SchemaUtils.create(Users, Games)
+            //insert all users into exposed database
+            hydrateUsers().forEach { record ->
+                Users.insert {
+                    it[username] = record.username
+                    it[password] = record.password
+                    it[email] = record.email
+                }
             }
-        }
-        //insert all games into exposed database
-        hydrateGames().forEach { record ->
-            Games.insert {
-                it[white_id] = EntityID(record.white_id, Users)
-                it[black_id] = EntityID(record.black_id, Users)
-                it[board] = record.board
-                it[history] = record.history
-                it[current] = record.current
-                it[start_time] = record.start_time
-                it[end_time] = record.end_time
-                it[status] = record.status
-                it[winner_id] = record.winner_id?.let{EntityID(it, Users)}
+            //insert all games into exposed database
+            hydrateGames().forEach { record ->
+                Games.insert {
+                    it[white_id] = record.white_id
+                    it[black_id] = record.black_id
+                    it[board] = record.board
+                    it[history] = record.history
+                    it[current] = record.current
+                    it[start_time] = record.start_time
+                    it[end_time] = record.end_time
+                    it[status] = record.status
+                    it[winner_id] = record.winner_id
+                }
             }
         }
     }
