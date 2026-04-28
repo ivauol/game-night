@@ -69,21 +69,29 @@
             backdrop-filter: blur(14px);
             box-shadow: 0 8px 30px rgba(0,0,0,0.35);
             border: 1px solid rgba(255,255,255,0.08);
-            margin: 3px;
+            margin: 5px;
+
         } 
 
         .form-container a{
             font-size: 30px;
             
         }
-
         .text {
             text-align: center;
-            color: rgba(255, 255, 255, 0.877);
-            font-size: 20px;
+            color: rgba(255,255,255,0.75);
         }
 
+        .text a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
+        .form-container:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(83, 32, 201, 0.45);
+        }
 
     </style>
 </head>
@@ -93,16 +101,19 @@
     </div>
     <div class="glow"></div>
 
-    <div class="flex-container">
-        <div class= "form-container">
-            <h1>Username: {{username}}</h1>
-            <p class="text">Email: {{email}}</p>
-            <p class="text">Total games: {{totalGames}}</p>
-            <p class="text">Active games: {{activeGames}}</p>
-            <p class=" text ">Win rate: {{winRate}}</p>
-                        
+    <body>
+        <div class= "flex-container">
+            <div class= "form-container">        
+                <p class="text"><a href="/search?status=active">Active Games</a></p>         
+            </div>
+            <div class= "form-container">        
+                <p class="text"><a href="/search?status=ended">Ended Games</a></p>       
+            </div>
+            <div class= "form-container">         
+                <p class="text"> <a href="/wait">Make New Game</a></p>        
+            </div>
         </div>
-    </div>
+    </body>
 
 </body>
 </html>
