@@ -28,8 +28,7 @@ data class UserRecord(
 fun Any?.parseCell(): String? = this?.toString()?.trim()?.takeIf { it.isNotEmpty() }
 
 //get all games from the CSV
-fun hydrateGames(): List<GameRecord> {
-    val filePath = "src/main/resources/data/games.csv"
+fun hydrateGames(filePath: String): List<GameRecord> {
     val df = DataFrame.readCsv(filePath)
     //get all the existing games
     val grouped = df.rows()
@@ -51,8 +50,7 @@ fun hydrateGames(): List<GameRecord> {
 }
 
 //get all users from the CSV
-fun hydrateUsers(): List<UserRecord> {
-    val filePath = "src/main/resources/data/users.csv"
+fun hydrateUsers(filePath: String): List<UserRecord> {
     val df = DataFrame.readCsv(filePath)
     //get all existing users
     val grouped = df.rows()
@@ -65,11 +63,4 @@ fun hydrateUsers(): List<UserRecord> {
         }
 
     return grouped
-}
-
-fun main() {
-    val records = hydrateGames()
-    for (record in records) {
-        println("Record: $record")
-    }
 }

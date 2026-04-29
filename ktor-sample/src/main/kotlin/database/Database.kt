@@ -24,7 +24,7 @@ fun Application.configureDatabase() {
             //create the tables
             SchemaUtils.create(Users, Games)
             //insert all users into exposed database
-            hydrateUsers().forEach { record ->
+            hydrateUsers("src/main/resources/data/users.csv").forEach { record ->
                 Users.insert {
                     it[username] = record.username
                     it[password] = record.password
@@ -32,7 +32,7 @@ fun Application.configureDatabase() {
                 }
             }
             //insert all games into exposed database
-            hydrateGames().forEach { record ->
+            hydrateGames("src/main/resources/data/games.csv").forEach { record ->
                 Games.insert {
                     it[white_id] = record.white_id
                     it[black_id] = record.black_id
