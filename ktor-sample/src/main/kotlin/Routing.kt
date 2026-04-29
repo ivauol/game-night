@@ -179,18 +179,8 @@ fun Application.configureRouting() {
         }
 
         get("/gamecenter"){
-            val session = call.sessions.get<PlayerSession>()
-
-            var login = false
-            if (session == null || session.playerId == 0){
-                login = true
-            }
-
-            call.displayGameCenter(login)
-        }
-
-        get ("/welcome"){
-            call.displayHome()
+            val session = call.sessions.get<PlayerSession>() ?: return@get call.respondRedirect("/login")
+            call.displayGameCenter()
         }
 
         //load the menu of options
@@ -271,6 +261,7 @@ fun Application.configureRouting() {
             val game = gameManager.createGame(gameId, playerId)
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
+            call.respondTemplate("game.peb", mapOf("gameId" to gameId, "boardString" to game.boardState, "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "username" to Users.username ,"current" to game.current, "winner" to game.winCheck(game.current)))
             call.respondTemplate("game.peb", mapOf("username" to username, "email" to email, "gameId" to gameId, "boardString" to game.boardState,
             "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "current" to game.current, "winner" to game.winCheck(game.current)))
         }

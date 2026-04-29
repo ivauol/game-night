@@ -153,6 +153,9 @@
         }
 
 
+
+
+
     </style>
 </head>
 <body>
@@ -165,10 +168,15 @@
             {% if login %}
                 <a href="/login" class="btn" style="font-size:16px">Login</a>
                 <a href="/register" class="btn" style="font-size:16px" >Register</a>
+                <a href="/login" class="btn">Login</a>
+                <a href="/register" class="btn" >Register</a>
             {% else %}
                 <a href="/stats" class="btn" style="font-size:16px">Profile</a>
                 
+                <a href="/stats" class="btn">Profile</a>
+                
                 <form action="/logout" method="post" style="display:inline;">
+                    <button class="btn" type="submit">Logout</button>
                     <button class="btn" type="submit">Logout</button>
                 </form>
             {% endif %}
@@ -177,6 +185,14 @@
 
     <section class="center">
         <h1>GAME CENTER</h1>
+
+
+        <div class="search-container">
+            <form action="/games/search" method="get">
+                <input type="text" placeholder="Search games..." name="search">
+                <button class="search-btn" type="submit"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
 
         <div class="games-grid">
             <div class="game-card">
