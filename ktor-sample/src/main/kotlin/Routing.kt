@@ -35,21 +35,19 @@ fun Application.configureRouting() {
         staticResources("/js", "static/js")
 
         get("/") {
-            //call.respondTemplate("base.peb", mapOf())
-            //call.displayHome()
-            return@get call.respondRedirect("/gamecenter")
+            return@get call.respondRedirect("/welcome")
         }
 
-        get("/home") {
-            call.respondTemplate("home.peb.html", mapOf())
+        get("/welcome") {
+            call.respondTemplate("welcomepage.peb", mapOf())
         }
 
-        get("/login2") {
+        get("/login") {
             val message = call.request.queryParameters["message"] ?: ""
-            call.respondTemplate("login2.peb.html", mapOf("message" to message))
+            call.respondTemplate("login.peb", mapOf("message" to message))
         }
 
-        post("/login2") {
+        post("/login") {
             val params = call.receiveParameters()
             val username = params.getOrFail("username")
             val password = params.getOrFail("password")
@@ -67,43 +65,30 @@ fun Application.configureRouting() {
             }
 
             if (user == null){
-                return@post call.respondRedirect("/login2?message=Invalid%20user")
+                return@post call.respondRedirect("/login?message=Invalid%20user")
             }
 
             if (!Hasher.verifyPassword(password, user!!.password)) {
-                return@post call.respondRedirect("/login2?message=Invalid%20user")
+                return@post call.respondRedirect("/login?message=Invalid%20user")
             }
 
             call.sessions.set(PlayerSession(playerId=user!!.id.value))
             return@post call.respondRedirect("/gamecenter")
-            // actually redirect to the game centre page
         }
 
-        // temp page for checking
-        get("/success") {
-            val session = call.sessions.get<PlayerSession>()
-            if (session == null) {
-                println("No session!")
-                return@get call.respondRedirect("/login2")
-            }
-            call.respondTemplate("success.peb.html", mapOf())
-        }
-
-        get("/register2") {
+        get("/register") {
             val message = call.request.queryParameters["message"] ?: ""
-            call.respondTemplate("register2.peb.html", mapOf("message" to message))
+            call.respondTemplate("register.peb", mapOf("message" to message))
         }
 
-        // TO-DO: lowercase usernames?
-
-        post("/register2") {
+        post("/register") {
             val params = call.receiveParameters()
             val givenEmail = params.getOrFail("email")
             val givenUsername = params.getOrFail("username")
             val givenPass = params.getOrFail("password")
 
             if (givenEmail.trim() == "" || givenUsername.trim() == "" || givenPass.trim() == "") {
-                return@post call.respondRedirect("/register2?message=Please%20fill%20all%20fields.")
+                return@post call.respondRedirect("/register?message=Please%20fill%20all%20fields.")
             }
 
             var userExists = false
@@ -126,32 +111,11 @@ fun Application.configureRouting() {
             }
 
             if (userExists) {
-                return@post call.respondRedirect("/register2?message=User%20exists.")
+                return@post call.respondRedirect("/register?message=User%20exists.")
             }
 
             call.sessions.set(PlayerSession(playerId=userId!!.value))
             return@post call.respondRedirect("/gamecenter")
-        }
-
-        //load the login page 
-        get("/login"){
-            val session = call.sessions.get<PlayerSession>()
-
-            if (session != null && session.playerId != 0){
-                return@get call.respondRedirect("/gamecenter")
-            }
-
-            call.displayLogIn()
-        }
-
-        get("/register"){
-            val session = call.sessions.get<PlayerSession>()
-
-            if (session != null && session.playerId != 0){
-                return@get call.respondRedirect("/gamecenter")
-            }
-
-            call.displayRegister()
         }
 
         get("/stats"){
@@ -160,8 +124,6 @@ fun Application.configureRouting() {
             val playerId = session.playerId
 
             val (username, email) = transaction {
-                //var userDetails = Users.selectAll()
-                //.firstOrNull{it[Users.id].value == playerId}
                 var userDetails = Users.selectAll().where{Users.id eq playerId}.firstOrNull()          
 
                 if (userDetails != null){
@@ -176,8 +138,6 @@ fun Application.configureRouting() {
             }
 
             val (totalGames, activeGames, wonGames) = transaction{
-                //var userGames = Games.selectAll()
-                //.filter{ it[Games.black_id].value == playerId || it[Games.white_id].value == playerId }
                 var userGames = Games.selectAll().where{(Games.black_id eq playerId) or (Games.white_id eq playerId)}
 
                 var total = 0
@@ -215,20 +175,7 @@ fun Application.configureRouting() {
 
         get("/logout") {
             call.sessions.clear<PlayerSession>()
-            call.respondRedirect("/loggedout")
-        }
-
-        get("/loggedout") {
-            call.respondTemplate("loggedout.peb.html", mapOf())
-        }
-
-        get("/regsuccess") {
-            val session = call.sessions.get<PlayerSession>()
-            if (session == null) {
-                println("No session!")
-                return@get call.respondRedirect("/register2")
-            }
-            call.respondTemplate("registersuccess.peb.html", mapOf())
+            call.respondRedirect("/welcome")
         }
 
         get("/gamecenter"){
@@ -250,6 +197,7 @@ fun Application.configureRouting() {
         get("/menu") {
             val session = call.sessions.get<PlayerSession>()
             ?: return@get call.respondRedirect("/login")
+
             if (session.playerId == 0){
                 return@get call.respondRedirect("/login")
             }
@@ -461,9 +409,6 @@ fun Application.configureRouting() {
     }
 }
 
-private suspend fun ApplicationCall.displayHome() {
-    respondTemplate("welcomepage.peb", mapOf())
-}
 
 private suspend fun ApplicationCall.displayLogIn(){
     respondTemplate("login-page.peb", mapOf()) // link to userdatabase
@@ -473,7 +418,7 @@ private suspend fun ApplicationCall.displayRegister() {
     respondTemplate("accountcreate.peb", mapOf()) // link to userdatabase
 }
 
-private suspend fun ApplicationCall.displayGameCenter(login: Boolean){
+private suspend fun ApplicationCall.displayGameCenter(){
     val image = "/workspaces/game-night/ktor-sample/src/main/resources/static/images/checkers-cover.png"
-    respondTemplate("gamecenter.peb", mapOf("checkersImageUrl" to image, "login" to login))
+    respondTemplate("gamecenter.peb", mapOf("checkersImageUrl" to image))
 }
