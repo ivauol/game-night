@@ -163,7 +163,7 @@
 
             <button type="submit">LOGIN</button>
 
-            <p class="signup-text">Don't have an account? <a href="/register2">Register</a></p>
+            <p class="signup-text">Don't have an account? <a href="/register">Register</a></p>
         </div>
     </div>
 </form>
