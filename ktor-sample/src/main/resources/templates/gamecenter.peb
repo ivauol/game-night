@@ -157,6 +157,9 @@
             margin-bottom: 18px;
             line-height: 1.5;
         }
+
+
+
     </style>
 </head>
 <body>
@@ -167,12 +170,13 @@
 
         <div style="float: right;">
             {% if login %}
-                <a href="/login">Login</a>
-                <a href="/register">Register</a>
+                <a href="/login" class="btn">Login</a>
+                <a href="/register" class="btn" >Register</a>
             {% else %}
-                <a href="/stats">Profile</a>
+                <a href="/stats" class="btn">Profile</a>
+                
                 <form action="/logout" method="post" style="display:inline;">
-                    <button class="play-btn" type="submit">Logout</button>
+                    <button class="btn" type="submit">Logout</button>
                 </form>
             {% endif %}
         </div>
@@ -180,6 +184,7 @@
 
     <section class="center">
         <h1>GAME CENTER</h1>
+
 
         <div class="search-container">
             <form action="/games/search" method="get">

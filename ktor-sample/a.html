@@ -37,23 +37,24 @@
             background: rgba(255,255,255,0.08);
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 2;
         }
 
-        .icon-bar a {
+        .icon-bar a,
+        .icon-bar form button {
+            all: unset;
+
             display: inline-block;
             padding: 18px 24px;
             color: white;
             font-size: 28px;
             transition: 0.3s ease;
+            text-decoration: none;
         }
 
-        .icon-bar a:hover {
+        .icon-bar a:hover,
+        .icon-bar form button:hover {
             background: rgba(255,255,255,0.12);
         }
-
         .game-panel {
             max-width: 900px;
             margin: 0 auto;
@@ -184,7 +185,7 @@
 
 
         .btn {
-            margin-top:2px;
+            margin-top:10px;
             border: none;
             text-decoration: none;
             color: white;

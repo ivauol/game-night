@@ -93,13 +93,54 @@
             box-shadow: 0 12px 30px rgba(83, 32, 201, 0.45);
         }
 
+        .btn {
+            border: none;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 18px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45);
+        }
+
     </style>
 </head>
-<body>
+<body>    
+    <div class="glow"></div>
+
     <div class="icon-bar">
         <a href="/gamecenter"><i class="fa fa-home"></i></a>
+        
+        <div style="float: right;">
+            {% if login %}
+                <form action="/login" method="post" style="display:inline;">
+                    <button class="btn" type="submit">Login</button>
+                </form>
+
+                <form action="/register" method="post" style="display:inline;">
+                    <button class="btn" type="submit">Register</button>
+                </form>
+            {% else %}
+                <form action="/stats" method="post" style="display:inline;">
+                    <button class="btn" type="submit">Profile</button>
+                </form>
+
+                <form action="/logout" method="post" style="display:inline;">
+                    <button class="btn" type="submit">Logout</button>
+                </form>
+            {% endif %}
+        </div>
     </div>
-    <div class="glow"></div>
+
 
     <body>
         <div class= "flex-container">

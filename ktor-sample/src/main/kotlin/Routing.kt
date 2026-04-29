@@ -127,6 +127,10 @@ fun Application.configureRouting() {
             call.displayGameCenter(login)
         }
 
+        get ("/welcome"){
+            call.displayHome()
+        }
+
         //load the menu of options
         get("/menu") {
             val session = call.sessions.get<PlayerSession>()
@@ -184,7 +188,7 @@ fun Application.configureRouting() {
             val game = gameManager.createGame(gameId, playerId)
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
-            call.respondTemplate("game.peb", mapOf("gameId" to gameId, "boardString" to game.boardState, "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "current" to game.current, "winner" to game.winCheck(game.current)))
+            call.respondTemplate("game.peb", mapOf("gameId" to gameId, "boardString" to game.boardState, "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "username" to Users.username ,"current" to game.current, "winner" to game.winCheck(game.current)))
         }
 
         //to set the player for testing

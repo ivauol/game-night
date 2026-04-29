@@ -89,17 +89,16 @@
         }
 
         button {
-            width: 100%;
-            margin-top: 24px;
-            padding: 16px;
             border: none;
-            border-radius: 999px;
+            text-decoration: none;
             color: white;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
-            cursor: pointer;
+            padding: 14px 22px;
+            border-radius: 999px;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
@@ -115,11 +114,45 @@
             margin-top: 20px;
         }
 
+        
+        .btn {
+            border: none;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 14px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45);
+        }
+
     </style>
 </head>
 <body>
     <div class="icon-bar">
         <a href="/gamecenter"><i class="fa fa-home"></i></a>
+
+        <div style="float: right;">
+            {% if login %}
+                <a href="/login" class="btn">Login</a>
+                <a href="/register" class="btn" >Register</a>
+            {% else %}
+                <a href="/stats" class="btn">Profile</a>
+                
+                <form action="/logout" method="post" style="display:inline;">
+                    <button class="btn" type="submit">Logout</button>
+                </form>
+            {% endif %}
+        </div>
+        
     </div>
     <div class="glow"></div>
 
