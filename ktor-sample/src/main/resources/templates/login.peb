@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>REGISTER</title>
+    <title>LOG-IN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         * {
@@ -28,7 +28,7 @@
             filter: blur(90px);
             border-radius: 50%;
             top: 10%;
-            left: 8%;
+            right: 8%;
             z-index: -1;
         }
 
@@ -51,8 +51,16 @@
             background: rgba(255,255,255,0.12);
         }
 
+        .page-title {
+            text-align: center;
+            font-size: 4rem;
+            letter-spacing: 3px;
+            margin-top: 20px;
+            text-shadow: 0 4px 25px rgba(0,0,0,0.35);
+        }
+
         .flex-container {
-            min-height: calc(100vh - 70px);
+            min-height: calc(100vh - 160px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -61,7 +69,7 @@
 
         .form-container {
             width: 100%;
-            max-width: 550px;
+            max-width: 460px;
             padding: 40px;
             border-radius: 24px;
             background: rgba(255,255,255,0.06);
@@ -70,28 +78,9 @@
             border: 1px solid rgba(255,255,255,0.08);
         }
 
-        h1 {
-            text-align: center;
-            font-size: 2.6rem;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-        }
-
-        p {
-            text-align: center;
-            margin-bottom: 28px;
-            color: rgba(255,255,255,0.75);
-        }
-
-        p a {
-            color: #93c5fd;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
         label {
             display: block;
-            margin: 14px 0 8px;
+            margin: 16px 0 8px;
             font-size: 0.95rem;
             letter-spacing: 1px;
         }
@@ -119,7 +108,7 @@
 
         button {
             width: 100%;
-            margin-top: 26px;
+            margin-top: 24px;
             padding: 16px;
             border: none;
             border-radius: 999px;
@@ -137,46 +126,44 @@
             box-shadow: 0 12px 30px rgba(139,92,246,0.45);
         }
 
-        @media (max-width: 768px) {
-            .form-container {
-                padding: 28px;
-                border-radius: 18px;
-            }
+        .signup-text {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.75);
+        }
 
-            h1 {
-                font-size: 2rem;
-            }
+        .signup-text a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
+
 <div class="glow"></div>
 
 <div class="icon-bar">
     <a class="active" href="/"><i class="fa fa-home"></i></a>
 </div>
 
-<form action="/register2" method="POST">
+<h1 class="page-title">WELCOME!</h1>
+
+<form action="/login" method="POST">
     <div class="flex-container">
         <div class="form-container">
-
             {% if message %}
             <p style="color:red">{{ message }}</p>
             {% endif %}
-
-            <h1>CREATE ACCOUNT</h1>
-            <p>Already have an account? <a href="/login2">Log in</a></p>
-
-            <label for="email"><b>EMAIL</b></label>
-            <input type="text" placeholder="Enter Email" name="email" required autofocus>
-
             <label for="username"><b>USERNAME</b></label>
-            <input type="text" placeholder="Enter Username" name="username" required>
+            <input id="username" type="text" placeholder="Enter Username" name="username" required autofocus>
 
             <label for="password"><b>PASSWORD</b></label>
-            <input type="password" placeholder="Enter Password" name="password" required>
+            <input id="password" type="password" placeholder="Enter Password" name="password" required>
 
-            <button type="submit">REGISTER</button>
+            <button type="submit">LOGIN</button>
+
+            <p class="signup-text">Don't have an account? <a href="/register2">Register</a></p>
         </div>
     </div>
 </form>
