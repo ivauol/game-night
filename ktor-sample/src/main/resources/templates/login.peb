@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LOG-IN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #312e81);
+            color: white;
+            overflow: hidden;
+        }
+
+        .glow {
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            background: rgba(139,92,246,0.18);
+            filter: blur(90px);
+            border-radius: 50%;
+            top: 10%;
+            right: 8%;
+            z-index: -1;
+        }
+
+        .icon-bar {
+            width: 100%;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .icon-bar a {
+            display: inline-block;
+            padding: 18px 24px;
+            color: white;
+            font-size: 28px;
+            transition: 0.3s ease;
+        }
+
+        .icon-bar a:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 4rem;
+            letter-spacing: 3px;
+            margin-top: 20px;
+            text-shadow: 0 4px 25px rgba(0,0,0,0.35);
+        }
+
+        .flex-container {
+            min-height: calc(100vh - 160px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 460px;
+            padding: 40px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 8px;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
+            color: white;
+            outline: none;
+            font-size: 1rem;
+            transition: 0.25s ease;
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,0.45);
+        }
+
+        input:focus {
+            border-color: rgba(147,197,253,0.7);
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 24px;
+            padding: 16px;
+            border: none;
+            border-radius: 999px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45);
+        }
+
+        .signup-text {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .signup-text a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<div class="icon-bar">
+    <a class="active" href="/"><i class="fa fa-home"></i></a>
+</div>
+
+<h1 class="page-title">WELCOME!</h1>
+
+<form action="/login" method="POST">
+    <div class="flex-container">
+        <div class="form-container">
+            {% if message %}
+            <p style="color:red">{{ message }}</p>
+            {% endif %}
+            <label for="username"><b>USERNAME</b></label>
+            <input id="username" type="text" placeholder="Enter Username" name="username" required autofocus>
+
+            <label for="password"><b>PASSWORD</b></label>
+            <input id="password" type="password" placeholder="Enter Password" name="password" required>
+
+            <button type="submit">LOGIN</button>
+
+            <p class="signup-text">Don't have an account? <a href="/register">Register</a></p>
+        </div>
+    </div>
+</form>
+
+</body>
+</html>

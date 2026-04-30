@@ -1,6 +1,6 @@
 package com.example
 
-class Game(val black_id: Int, val white_id: Int, var current: String = "black", var boardState: String, var history: MutableMap<String, Int> = mutableMapOf<String, Int>()){
+class Game(val black_id: Int, val white_id: Int, var current: String, var boardState: String, var history: MutableMap<String, Int> = mutableMapOf<String, Int>()){
     var board: Array<Array<Piece?>>
     init {
         board = Array(8){ Array<Piece?>(8) {null} }
@@ -219,6 +219,9 @@ class Game(val black_id: Int, val white_id: Int, var current: String = "black", 
 
     //determine if someone has won or if there is a stalemate
     fun winCheck(player: String): String{
+        if (this.history[this.boardState] ?: 0 >= 3) {
+            return "draw"
+        }
         var blackPossible = false
         var whitePossible = false
         for (x in 0..7) {

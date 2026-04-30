@@ -19,6 +19,10 @@ repositories {
     mavenCentral()
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
@@ -35,6 +39,10 @@ dependencies {
     implementation("io.ktor:ktor-server-websockets:2.3.4")
     implementation("io.ktor:ktor-server-sessions:2.3.4")
 
+    implementation("at.favre.lib:bcrypt:0.10.2")
+
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+    testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
+    testImplementation("io.kotest:kotest-assertions-core:5.8.0")
 }
