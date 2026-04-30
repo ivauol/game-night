@@ -178,6 +178,23 @@ fun Application.configureRouting() {
             ?: return@get call.respondRedirect("/login")
 
             val playerId = session.playerId
+ 
+            val (username, email) = transaction {
+                //var userDetails = Users.selectAll()
+                //.firstOrNull{it[Users.id].value == playerId}
+                var userDetails = Users.selectAll().where{Users.id eq playerId}.firstOrNull()          
+
+                if (userDetails != null){
+                    Pair(userDetails[Users.username], userDetails[Users.email])
+                }
+                else{
+                    Pair("", "")
+                }
+            }
+            if (username == ""){
+                return@get call.respondRedirect("/gamecenter")
+            }
+    
             if (playerId == 0){
                 return@get call.respondRedirect("/login")
             }
@@ -188,7 +205,7 @@ fun Application.configureRouting() {
             val game = gameManager.createGame(gameId, playerId)
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
-            call.respondTemplate("game.peb", mapOf("gameId" to gameId, "boardString" to game.boardState,
+            call.respondTemplate("game.peb", mapOf("username" to username, "email" to email, "gameId" to gameId, "boardString" to game.boardState,
             "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "current" to game.current, "winner" to game.winCheck(game.current)))
         }
 

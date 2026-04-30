@@ -161,12 +161,6 @@
             <h1>CREATE ACCOUNT</h1>
             <p>Already have an account? <a href="/login">Log in</a></p>
 
-            <label for="fname"><b>FIRST NAME</b></label>
-            <input type="text" placeholder="Enter First Name" name="fname" required>
-
-            <label for="lname"><b>LAST NAME</b></label>
-            <input type="text" placeholder="Enter Last Name" name="lname" required>
-
             <label for="email"><b>EMAIL</b></label>
             <input type="text" placeholder="Enter Email" name="email" required>
 

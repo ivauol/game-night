@@ -6,20 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkers Game</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, #0f172a, #1e293b, #312e81);
             color: white;
-            padding: 20px;
+            overflow-x: hidden;
         }
-
         .glow {
             position: fixed;
             width: 500px;
@@ -31,7 +24,6 @@
             left: 5%;
             z-index: 0;
         }
-
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -41,18 +33,13 @@
             position: relative;
             z-index: 2;
         }
-
         .icon-bar a {
             display: inline-block;
             padding: 18px 24px;
             color: white;
             font-size: 28px;
-            transition: 0.3s ease;
         }
 
-        .icon-bar a:hover {
-            background: rgba(255,255,255,0.12);
-        }
 
         .game-panel {
             max-width: 900px;
@@ -169,25 +156,7 @@
 
         .button,
         button {
-            text-decoration: none;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 999px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
-            transition: transform 0.25s ease;
-            margin-top:2px;
-        }
-        
-        .button:hover,
-        button:hover { transform: translateY(-2px); }
-
-
-        .btn {
-            margin-top:2px;
+            margin-top:6px;
             border: none;
             text-decoration: none;
             color: white;
@@ -200,13 +169,36 @@
             cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
-
-        .btn:hover {
+        
+        .button:hover,
+        button:hover { 
             transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 12px 30px rgba(139,92,246,0.45);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
+        }
+
+            
+        .btn {
+            margin-top:6px;
+            border: none;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 18px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        
+        .btn:hover { 
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
         }
 
         .username_btn {
+            margin-left:50%;
             margin-top:2px;
             text-decoration: none;
             color: white;
@@ -214,9 +206,12 @@
             font-weight: bold;
             padding: 18px 22px;
             border-radius: 999px;
-            background: linear-gradient(135deg, #7b4fe2);
+            background: linear-gradient(135deg, #4136e0);
             box-shadow: 0 8px 25px rgba(59,130,246,0.35);
             cursor: pointer;
+            font-size:16px;
+            display:center;
+            
         }
 
         .flex-container {
@@ -240,7 +235,18 @@
 
         } 
 
-        
+        .container {
+            width: 25%;
+            max-width: 1000px;
+            padding: 40px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            margin: 5px;
+
+        } 
 
     </style>
 </head>
@@ -249,26 +255,26 @@
 
     <div class="icon-bar">
         <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
+        
+        <b class="username_btn"  > {{username}} </b>
+
         <div style="float: right;">
-            <button class="username_btn" > {{username}} </button>
+
 
             {% if login %}
-                <a href="/login" class="button" style="font-size:18px">Login</a>
-                <a href="/register" class="button" style="font-size:18px" >Register</a>
+                <a href="/login" class="button" style="font-size:16px">Login</a>
+                <a href="/register" class="button" style="font-size:16px" >Register</a>
             {% else %}
-                <a href="/stats" class="button" style="font-size:18px">Profile</a>
+                <a href="/stats" class="button" style="font-size:16px">Profile</a>
                 
                 <form action="/logout" method="post" style="display:inline;">
-                    <button class="btn" type="submit">Logout</button>
+                    <button class="button" type="submit" margin-left="2px">Logout</button>
                 </form>
             {% endif %}
         </div>    
     </div>
 
     {#display black's id#}
-    <div style="text-align:center; margin-top:20px;" id="blackPlayer">
-        Black: <span id="blackId">{{ black }}</span>
-    </div>
 
     <div class="flex-container">
         <div class="form-container">
@@ -298,10 +304,16 @@
 
         </div>
 
-        <div class="form-container">
+        <div class="container">
+        
+            <div style="text-align:center; margin-top:20px;" id="blackPlayer">
+                Black: <span id="blackId">{{ black }}</span>
+            </div>
+
+            <p style="text-align:center;">Your ID: {{ playerId }}</p>
 
             <div style="text-align:center; margin-top:20px;" id="whitePlayer">
-                Opponent:<span id="whiteId">  {{ white }}</span>
+                Opponents ID:<span id="whiteId"> {{ white }}</span> <br>
             </div>
 
             <p id="errorBox" style="text-align:center"></p>
@@ -321,7 +333,7 @@
 
             </div>
             <br>
-            <a style="width:100%; font-size:18px "class="button" > HOW TO PLAY</a>
+            <a style="width:100%; font-size:18px" class="button" > HOW TO PLAY</a>
 
 
 
