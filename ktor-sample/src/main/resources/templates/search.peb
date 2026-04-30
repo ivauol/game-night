@@ -87,18 +87,20 @@
             text-decoration: none;
             font-weight: bold;
         }
+        
 
         button {
+            width: 100%;
+            margin-top: 24px;
+            padding: 16px;
             border: none;
-            text-decoration: none;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            padding: 14px 22px;
             border-radius: 999px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             box-shadow: 0 8px 25px rgba(59,130,246,0.35);
-            cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
@@ -114,21 +116,23 @@
             margin-top: 20px;
         }
 
-        
+        .b,
         .btn {
             border: none;
             text-decoration: none;
             color: white;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
-            padding: 14px 22px;
+            padding: 14px;
             border-radius: 999px;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             box-shadow: 0 8px 25px rgba(59,130,246,0.35);
             cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
+            margin-top: 5px;
 
+        }
+        .b:hover,
         .btn:hover {
             transform: translateY(-3px) scale(1.03);
             box-shadow: 0 12px 30px rgba(139,92,246,0.45);
@@ -187,10 +191,10 @@
 
         <div style="float: right;">
             {% if login %}
-                <a href="/login" class="btn">Login</a>
-                <a href="/register" class="btn" >Register</a>
+                <a href="/login" class="b">Login</a>
+                <a href="/register" class="b" >Register</a>
             {% else %}
-                <a href="/stats" class="btn">Profile</a>
+                <a href="/stats" class="b">Profile</a>
                 
                 <form action="/logout" method="post" style="display:inline;">
                     <button class="btn" type="submit">Logout</button>
@@ -205,12 +209,19 @@
         <div class= "form-container">
             <ul>
                 {% for game in games %}
-                    
-                    <p class="game"> Game ID: {{ game }} </p>
-                    <form action="/join" method="post" style="display:inline;">
-                        <input type="hidden" name="gameId" value="{{ game }}">
-                        <button type="submit">Join Game</button>
-                    </form>
+                    {% if game == 0 %}
+
+                        <h2> You have no active or ended games</h2>
+                        <a href="/wait" class="btn" >Start a Match</a>
+
+                    {% else %} 
+                        <p class="game"> Game ID: {{ game }} </p>
+                        <form action="/join" method="post" style="display:inline;">
+                            <input type="hidden" name="gameId" value="{{ game }}">
+                            <button type="submit">Join Game</button>
+                        </form>
+
+                    {% endif %}                   
 
                 {% endfor %}
             </ul>

@@ -105,6 +105,7 @@
             box-shadow: 0 8px 25px rgba(59,130,246,0.35);
             cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
+            margin-top: 5px;
         }
 
         .btn:hover {
@@ -122,20 +123,13 @@
         
         <div style="float: right;">
             {% if login %}
-                <form action="/login" method="post" style="display:inline;">
-                    <button class="btn" type="submit">Login</button>
-                </form>
-
-                <form action="/register" method="post" style="display:inline;">
-                    <button class="btn" type="submit">Register</button>
-                </form>
+                <a href="/login" class="btn">Login</a>
+                <a href="/register" class="btn" >Register</a>
             {% else %}
-                <form action="/stats" method="post" style="display:inline;">
-                    <button class="btn" type="submit">Profile</button>
-                </form>
-
+                <a href="/stats" class="btn">Profile</a>
+                
                 <form action="/logout" method="post" style="display:inline;">
-                    <button class="btn" type="submit">Logout</button>
+                    <a class="btn" type="submit">Logout</a>
                 </form>
             {% endif %}
         </div>
