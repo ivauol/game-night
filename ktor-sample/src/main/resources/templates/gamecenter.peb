@@ -40,8 +40,12 @@
             margin-bottom: 20px;
             position: relative;
             z-index: 2;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
         }
 
+        .icon-bar a {
         .icon-bar a {
             display: inline-block;
             padding: 18px 24px;
@@ -50,6 +54,7 @@
             transition: 0.3s ease;
         }
 
+        .icon-bar a:hover {
         .icon-bar a:hover {
             background: rgba(255,255,255,0.12);
         }
@@ -63,7 +68,10 @@
         h1 {
             color:#4d86e4;
             font-family: sans-serif;
+            color:#4d86e4;
+            font-family: sans-serif;
             text-align: center;
+            font-size: 5rem;
             font-size: 5rem;
             letter-spacing: 4px;
             margin-bottom: 30px;
@@ -153,9 +161,6 @@
         }
 
 
-
-
-
     </style>
 </head>
 <body>
@@ -168,8 +173,6 @@
             {% if login %}
                 <a href="/login" class="btn" style="font-size:16px">Login</a>
                 <a href="/register" class="btn" style="font-size:16px" >Register</a>
-                <a href="/login" class="btn">Login</a>
-                <a href="/register" class="btn" >Register</a>
             {% else %}
                 <a href="/stats" class="btn" style="font-size:16px">Profile</a>
                 
@@ -185,14 +188,6 @@
 
     <section class="center">
         <h1>GAME CENTER</h1>
-
-
-        <div class="search-container">
-            <form action="/games/search" method="get">
-                <input type="text" placeholder="Search games..." name="search">
-                <button class="search-btn" type="submit"><i class="fa fa-search"></i></button>
-            </form>
-        </div>
 
         <div class="games-grid">
             <div class="game-card">
