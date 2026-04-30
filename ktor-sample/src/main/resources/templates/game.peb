@@ -167,8 +167,9 @@
 
         #move::placeholder { color: rgba(255,255,255,0.45); }
 
-        .username,
+        .button,
         button {
+            text-decoration: none;
             padding: 14px 24px;
             border: none;
             border-radius: 999px;
@@ -178,8 +179,10 @@
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             box-shadow: 0 8px 25px rgba(59,130,246,0.35);
             transition: transform 0.25s ease;
+            margin-top:2px;
         }
         
+        .button:hover,
         button:hover { transform: translateY(-2px); }
 
 
@@ -205,24 +208,37 @@
 
         .username_btn {
             margin-top:2px;
-            border: none;
             text-decoration: none;
             color: white;
             font-size: 1rem;
             font-weight: bold;
             padding: 18px 22px;
             border-radius: 999px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: linear-gradient(135deg, #7b4fe2);
             box-shadow: 0 8px 25px rgba(59,130,246,0.35);
             cursor: pointer;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-            align-items: center;
         }
 
-        .username_btn:hover {
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 12px 30px rgba(139,92,246,0.45);
+        .flex-container {
+            min-height: calc(100vh - 160px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
+
+        .form-container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 40px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            margin: 5px;
+
+        } 
 
         
 
@@ -237,10 +253,10 @@
             <button class="username_btn" > {{username}} </button>
 
             {% if login %}
-                <button href="/login" class="btn">Login</button>
-                <button href="/register" class="btn" >Register</button>
+                <a href="/login" class="button" style="font-size:18px">Login</a>
+                <a href="/register" class="button" style="font-size:18px" >Register</a>
             {% else %}
-                <button href="/stats" class="btn">Profile</button>
+                <a href="/stats" class="button" style="font-size:18px">Profile</a>
                 
                 <form action="/logout" method="post" style="display:inline;">
                     <button class="btn" type="submit">Logout</button>
@@ -254,41 +270,64 @@
         Black: <span id="blackId">{{ black }}</span>
     </div>
 
-    <div class="game-panel">
-        <h1>♟ Checkers Game</h1>
-        <p style="text-align:center;">Player ID: {{ playerId }}</p>
+    <div class="flex-container">
+        <div class="form-container">
+            <div class="game-panel">
+                <h1>♟ Checkers Game</h1>
+                <p style="text-align:center;">Player ID: {{ playerId }}</p>
 
-        <div class="board-container">
-            <table class="checkers-board">
-                <tr>
-                    <td></td>
-                    {% for col in ['A','B','C','D','E','F','G','H'] %}
-                        <td class="label">{{ col }}</td>
-                    {% endfor %}
-                </tr>
-                {% for row in [1,2,3,4,5,6,7,8] %}
-                <tr>
-                    <td class="label">{{ row }}</td>
-                    {% for col in [1,2,3,4,5,6,7,8] %}
-                        <td class="square {% if (row + col) is even %}light{% else %}dark{% endif %}"></td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
+                <div class="board-container">
+                    <table class="checkers-board">
+                        <tr>
+                            <td></td>
+                            {% for col in ['A','B','C','D','E','F','G','H'] %}
+                                <td class="label">{{ col }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% for row in [1,2,3,4,5,6,7,8] %}
+                        <tr>
+                            <td class="label">{{ row }}</td>
+                            {% for col in [1,2,3,4,5,6,7,8] %}
+                                <td class="square {% if (row + col) is even %}light{% else %}dark{% endif %}"></td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-container">
+
+            <div style="text-align:center; margin-top:20px;" id="whitePlayer">
+                Opponent:<span id="whiteId">  {{ white }}</span>
+            </div>
+
+            <p id="errorBox" style="text-align:center"></p>
+            <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
+
+            <div style="text-align:center; margin-top:10px;">
+                <button type="button" id="submitMoveBtn" style="font-size:18px">Submit Move</button>
+                <button type="button" id="clearMoveBtn" style="font-size:18px">Clear</button>
+            </div>
+            
+            <div class="form-container ">
+                <p style= "font-size: 20px; text-align: center">
+                    1. Select the <em> checker </em> you want to move <br><br>
+                    2. Select the <em> square </em> you want to move to <br><br>
+                    3. Submit the move!
+                </p>
+
+            </div>
+            <br>
+            <a style="width:100%; font-size:18px "class="button" > HOW TO PLAY</a>
+
+
+
         </div>
     </div>
 
-    <div style="text-align:center; margin-top:20px;" id="whitePlayer">
-        White: <span id="whiteId">{{ white }}</span>
-    </div>
-
-    <p id="errorBox" style="text-align:center"></p>
-    <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
-
-    <div style="text-align:center; margin-top:10px;">
-        <button type="button " id="submitMoveBtn">Submit Move</button>
-        <button type="button" id="clearMoveBtn">Clear</button>
-    </div>
 
     <script>
         //define global variables

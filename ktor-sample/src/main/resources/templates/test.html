@@ -4,15 +4,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Checkers Game</title>
+    <title>Checkers Game</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, #0f172a, #1e293b, #312e81);
             color: white;
             padding: 20px;
         }
+
         .glow {
             position: fixed;
             width: 500px;
@@ -24,6 +31,7 @@
             left: 5%;
             z-index: 0;
         }
+
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -33,12 +41,19 @@
             position: relative;
             z-index: 2;
         }
+
         .icon-bar a {
             display: inline-block;
             padding: 18px 24px;
             color: white;
             font-size: 28px;
+            transition: 0.3s ease;
         }
+
+        .icon-bar a:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
         .game-panel {
             max-width: 900px;
             margin: 0 auto;
@@ -47,25 +62,47 @@
             background: rgba(255,255,255,0.06);
             backdrop-filter: blur(14px);
             box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
             position: relative;
             z-index: 2;
         }
-        h1 { text-align: center; margin-bottom: 10px; font-size: 2.8rem; }
-        #status { text-align: center; margin: 12px 0 24px; color: #cbd5e1; font-weight: bold; }
-        .board-container { display: flex; justify-content: center; margin: 20px 0; }
-        .checkers-board { border-collapse: collapse; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.8rem;
+        }
+
+        #status {
+            text-align: center;
+            margin: 12px 0 24px;
+            color: #cbd5e1;
+            font-weight: bold;
+        }
+
+        .board-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .checkers-board {
+            border-collapse: collapse;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
         .square {
             width: 60px;
             height: 60px;
             text-align: center;
             vertical-align: middle;
-            cursor: pointer;
-            transition: 0.2s ease;
         }
-        .square:hover { filter: brightness(1.1); }
-        .selected { outline: 3px solid #38bdf8; }
+
         .light { background-color: #f0d9b5; }
         .dark { background-color: #312600f7; }
+
         .label {
             width: 30px;
             height: 30px;
@@ -74,149 +111,280 @@
             font-weight: bold;
             text-align: center;
         }
+
         .piece {
             width: 42px;
             height: 42px;
             border-radius: 50%;
             margin: auto;
             margin-top: 8px;
-            box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.4),
+                        inset 0 -2px 4px rgba(0,0,0,0.3),
+                        0 2px 4px rgba(0,0,0,0.3);
         }
+
         .white-piece { background: radial-gradient(circle at 30% 30%, #ffffff, #cbd5e1); }
         .black-piece { background: radial-gradient(circle at 30% 30%, #64748b, #0f172a); }
+
+        .king {
+            position: relative;
+        }
+
+        .king::after {
+            content: "♔";
+            position: absolute;
+            font-size: 39px;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: gold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        #moveForm {
+            max-width: 500px;
+            margin: 30px auto 0;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+
+        #move {
+            flex: 1;
+            min-width: 220px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #move::placeholder { color: rgba(255,255,255,0.45); }
+
+        .button,
+        button {
+            text-decoration: none;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 999px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            transition: transform 0.25s ease;
+        }
+        
+        .button:hover,
+        button:hover { transform: translateY(-2px); }
+
+
+        .btn {
+            margin-top:2px;
+            border: none;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 18px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45);
+        }
+
+        .username_btn {
+            margin-top:2px;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 18px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #7b4fe2);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+        }
+
+        .flex-container {
+            min-height: calc(100vh - 160px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 40px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            margin: 5px;
+
+        } 
+
+        
+
     </style>
 </head>
 <body>
-    <div class="icon-bar">
-        <a href="/gamecenter"><i class="fa fa-home"></i></a>
-    </div>
     <div class="glow"></div>
 
-    <div class="game-panel">
-        <h1>♟ Checkers Game</h1>
-        <p style="text-align:center;">Player ID: {{ playerId }}</p>
-        <p id="status">Click a piece to begin</p>
+    <div class="icon-bar">
+        <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
+        <div style="float: right;">
+            <button class="username_btn" > {{username}} </button>
 
-        <div class="board-container">
-            <table class="checkers-board">
-                <tr>
-                    <td></td>
-                    {% for col in ['A','B','C','D','E','F','G','H'] %}
-                        <td class="label">{{ col }}</td>
-                    {% endfor %}
-                </tr>
-                {% for row in [1,2,3,4,5,6,7,8] %}
-                <tr>
-                    <td class="label">{{ row }}</td>
-                    {% for col in [1,2,3,4,5,6,7,8] %}
-                        <td class="square {% if (row + col) is even %}light{% else %}dark{% endif %}"></td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
+            {% if login %}
+                <a href="/login" class="button" style="font-size:18px">Login</a>
+                <a href="/register" class="button" style="font-size:18px" >Register</a>
+            {% else %}
+                <a href="/stats" class="button" style="font-size:18px">Profile</a>
+                
+                <form action="/logout" method="post" style="display:inline;">
+                    <button class="btn" type="submit">Logout</button>
+                </form>
+            {% endif %}
+        </div>    
+    </div>
+
+    {#display black's id#}
+    <div style="text-align:center; margin-top:20px;" id="blackPlayer">
+        Black: <span id="blackId">{{ black }}</span>
+    </div>
+
+    <div class="flex-container">
+        <div class="form-container">
+            <div class="game-panel">
+                <h1>♟ Checkers Game</h1>
+                <p style="text-align:center;">Player ID: {{ playerId }}</p>
+
+                <div class="board-container">
+                    <table class="checkers-board">
+                        <tr>
+                            <td></td>
+                            {% for col in ['A','B','C','D','E','F','G','H'] %}
+                                <td class="label">{{ col }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% for row in [1,2,3,4,5,6,7,8] %}
+                        <tr>
+                            <td class="label">{{ row }}</td>
+                            {% for col in [1,2,3,4,5,6,7,8] %}
+                                <td class="square {% if (row + col) is even %}light{% else %}dark{% endif %}"></td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-container">
+
+            <div style="text-align:center; margin-top:20px;" id="whitePlayer">
+                Opponent:<span id="whiteId">  {{ white }}</span>
+            </div>
+
+            <p id="errorBox" style="text-align:center"></p>
+            <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
+
+            <div style="text-align:center; margin-top:10px;">
+                <button type="button" id="submitMoveBtn" style="font-size:18px">Submit Move</button>
+                <button type="button" id="clearMoveBtn" style="font-size:18px">Clear</button>
+            </div>
+            
+            <div class="form-container ">
+                <p style= "font-size: 20px; text-align: center">
+                    1. Select the <em> checker </em> you want to move <br><br>
+                    2. Select the <em> square </em> you want to move to <br><br>
+                    3. Submit the move!
+                </p>
+
+            </div>
+            <br>
+            <a style="width:100%; font-size:18px "class="button" > HOW TO PLAY</a>
+
+
+
         </div>
     </div>
 
-    <form id="moveForm" style="display:none;">
-        <input type="hidden" name="gameId" value="{{ gameId }}">
-        <input type="hidden" name="playerId" value="{{ playerId }}">
-    </form>
 
     <script>
-        let selectedSquare = null;
-        let selectedCell = null;
-
-        function getSquareName(row, col) {
-            const letters = "ABCDEFGH";
-            return letters[col] + (row + 1);
+        //define global variables
+        window.squares = [];
+        window.player = "";
+        if ({{black}} == {{playerId}}){
+            window.player = "black";
         }
-
-        function clearSelection() {
-            document.querySelectorAll('.square').forEach(c => c.classList.remove('selected'));
-            selectedSquare = null;
-            selectedCell = null;
+        else if ({{white}} == {{playerId}}){
+            window.player = "white";
         }
+        window.current = "{{current}}";
+        window.winner = "{{winner}}";
+        window.gameId = "{{gameId}}";
+    </script>
 
-        async function submitMove(move) {
-            const gameId = document.querySelector('input[name="gameId"]').value;
-            const playerId = document.querySelector('input[name="playerId"]').value;
+    <script src = "/js/game.js"></script>
 
-            const formData = new FormData();
-            formData.append('gameId', gameId);
-            formData.append('playerId', playerId);
-            formData.append('move', move);
-
-            const response = await fetch('/move', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                document.getElementById('status').textContent = 'Move failed';
-            } else {
-                document.getElementById('status').textContent = `Move submitted: ${move}`;
-            }
-        }
-
-        function handleSquareClick(row, col, cell) {
-            const clickedSquare = getSquareName(row, col);
-
-            if (!selectedSquare) {
-                clearSelection();
-                selectedSquare = clickedSquare;
-                selectedCell = cell;
-                cell.classList.add('selected');
-                document.getElementById('status').textContent = `Selected ${selectedSquare}`;
-            } else {
-                const move = `${selectedSquare}-${clickedSquare}`;
-                clearSelection();
-                submitMove(move);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
             const boardString = "{{ boardString }}";
 
-            function parseBoardString(str) {
-                const board = [];
-                for (let i = 0; i < 8; i++) {
-                    const row = [];
-                    for (let j = 0; j < 8; j++) row.push(str[i * 8 + j]);
-                    board.push(row);
-                }
-                return board;
-            }
-
-            function updateBoardHTML(board) {
-                const table = document.querySelector('.checkers-board');
-                for (let i = 0; i < 8; i++) {
-                    for (let j = 0; j < 8; j++) {
-                        const cell = table.rows[i + 1].cells[j + 1];
-                        const piece = board[i][j];
-
-                        if (piece === 'r' || piece === 'w') {
-                            cell.innerHTML = '<div class="piece white-piece"></div>';
-                        } else if (piece === 'b') {
-                            cell.innerHTML = '<div class="piece black-piece"></div>';
-                        } else {
-                            cell.innerHTML = '';
-                        }
-
-                        cell.onclick = () => handleSquareClick(i, j, cell);
-                    }
-                }
-            }
-
+            //prepare all visual elements on load
             const board = parseBoardString(boardString);
             updateBoardHTML(board);
+            currentPlayer("{{current}}");
+            winCheck("{{winner}}");
+            buttonVisible();
 
-            const socket = new WebSocket('ws://localhost:8080/ws/{{ gameId }}');
+            //set up a button in each cell on load
+            const table = document.querySelector(".checkers-board");
+            for (let i = 0; i <= 7; i++) {
+                for (let j = 0; j <= 7; j++) {
+                    const cell = table.rows[i+1].cells[j+1];
+                    cell.addEventListener("click", () => {
+                        handleSquareClick(i, j, cell);
+                    });
+                }
+            }
+
+            //open a new connection
+            const socket = new WebSocket(`ws://${window.location.host}/gamews?gameId={{gameId}}`);
+            socket.onopen = () => console.log("WebSocket connected");
+            //update the page if any changes have occurred
             socket.onmessage = (event) => {
-                const newBoard = parseBoardString(event.data);
+                console.log("Received:", event.data);
+                const parts = event.data.split(",")
+                const newBoard = parseBoardString(parts[0]);
                 updateBoardHTML(newBoard);
-                document.getElementById('status').textContent = 'Board updated!';
+                currentPlayer(parts[2]);
+                window.current = parts[2];
+                
+                window.winner = winCheck(parts[1]);
+                buttonVisible();
             };
+
+            document.getElementById("submitMoveBtn").addEventListener("click", submitMove);
+            document.getElementById("clearMoveBtn").addEventListener("click", clearSelection);
         });
     </script>
 </body>
-</html>
