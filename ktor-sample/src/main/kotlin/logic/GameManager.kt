@@ -66,7 +66,6 @@ class GameManager(){
         if (winner != ""){
             status = "ended"
             win_time = System.currentTimeMillis()
-            winner_id = 0
             if (winner == "black"){
                 winner_id = transaction{
                     //val query = Games.selectAll().first{it[Games.id] == game_id}

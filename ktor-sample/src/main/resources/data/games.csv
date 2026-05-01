@@ -10,3 +10,4 @@ game_id,black_id,white_id,board,history,current,start_time,end_time,status,winne
 9,3,1,.b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b,{},black,1680000000800,,active,
 10,1,3,.b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b,{},black,1680000000900,,active,
 11,1,2,.b.b.b.bb.b.b.b..b.b.b.b........................................b,{},white,1680000000100,,ended,1
+12,1,2,.b............................................................w.b,{$........b.....................................................w.w$:2},black,1680000000100,,active,

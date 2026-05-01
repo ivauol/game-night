@@ -87,17 +87,22 @@ function currentPlayer(turn) {
 }
 
 //check for win
-function winCheck(player) {
-    if (player !== "") {
+function winCheck(winner) {
+    if (winner !== "") {
 
         const winnerDiv = document.createElement("div");
         winnerDiv.style.textAlign = "center";
         winnerDiv.style.fontSize = "24px";
         winnerDiv.style.marginTop = "20px";
-        winnerDiv.innerText = player + " wins!";
+        if (winner == "draw"){
+            winnerDiv.innerText = "Draw!";
+        }
+        else{
+            winnerDiv.innerText = player + " wins!";
+        }
         document.body.appendChild(winnerDiv);
 
-        return player;
+        return winner;
     }
     return "";
 }
