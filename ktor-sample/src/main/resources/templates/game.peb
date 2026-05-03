@@ -154,7 +154,7 @@
 
         #move::placeholder { color: rgba(255,255,255,0.45); }
 
-        .button,
+        .popup,
         button {
             margin-top:6px;
             border: none;
@@ -170,8 +170,29 @@
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
         
-        .button:hover,
+        .popup:hover,
         button:hover { 
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
+        }
+
+        .button {
+            display:center;
+            margin-top:6px;
+            border: none;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 18px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        
+        .button:hover { 
             transform: translateY(-3px) scale(1.03);
             box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
         }
@@ -198,7 +219,7 @@
         }
 
         .username_btn {
-            margin-left:50%;
+            display:center;
             margin-top:2px;
             text-decoration: none;
             color: white;
@@ -210,8 +231,7 @@
             box-shadow: 0 8px 25px rgba(59,130,246,0.35);
             cursor: pointer;
             font-size:16px;
-            display:center;
-            
+            margin-right: 5px;
         }
 
         .flex-container {
@@ -219,13 +239,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
         }
 
         .form-container {
             width: 100%;
             max-width: 1000px;
-            padding: 40px;
+            padding: 30px;
             border-radius: 24px;
             background: rgba(255,255,255,0.06);
             backdrop-filter: blur(14px);
@@ -246,6 +266,41 @@
             border: 1px solid rgba(255,255,255,0.08);
             margin: 5px;
 
+        }
+
+        .popup {
+            position: relative;
+            text-align: center;
+            display: inline-block;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }   
+
+        /* The actual popup */
+        .popup .popuptext {
+            visibility: hidden;
+            width: 400px;
+            background-color: #93a1e1;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80%;
+        }
+
+
+        /* Toggle this class - hide and show the popup */
+        .popup .show {
+            visibility: visible;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
         } 
 
     </style>
@@ -256,10 +311,10 @@
     <div class="icon-bar">
         <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
         
-        <b class="username_btn"  > {{username}} </b>
 
         <div style="float: right;">
-
+        
+            <b class="username_btn"> {{username}} </b>
 
             {% if login %}
                 <a href="/login" class="button" style="font-size:16px">Login</a>
@@ -274,13 +329,14 @@
         </div>    
     </div>
 
+
+
     {#display black's id#}
 
     <div class="flex-container">
         <div class="form-container">
             <div class="game-panel">
                 <h1>♟ Checkers Game</h1>
-                <p style="text-align:center;">Player ID: {{ playerId }}</p>
 
                 <div class="board-container">
                     <table class="checkers-board">
@@ -333,12 +389,34 @@
 
             </div>
             <br>
-            <a style="width:100%; font-size:18px" class="button" > HOW TO PLAY</a>
+            <div style="width:100%; font-size:18px" 
+                class="popup" onclick="myFunction()" style="text-align: center;" > HOW TO PLAY
+                <span class="popuptext" id="myPopup">
+                    <p>Checkers is a two-player game where the objective is to capture all of your opponent's pieces
+                         or block them so they cannot move. 
+                        <br> 1. Each player starts with 12 pieces placed on the dark squares of 
+                        the board.<br> 2. Players take turns moving their pieces diagonally 
+                        forward to an adjacent empty square. <br> 3. If an opponent's piece is 
+                        adjacent and the square beyond it is empty, you can jump over it 
+                        to capture it. <br> 4. If a piece reaches the opposite end of the board, it becomes a king and 
+                        can move both forward and backward. 
+                        <br> 5. The first player to capture all opponent pieces
+                         or block them wins the game!</p>
+                </span> 
+            </div>
 
-
+            <script>
+                // When the user clicks on div, open the popup
+                function myFunction() {
+                    var popup = document.getElementById("myPopup");
+                    popup.classList.toggle("show");
+                }
+            </script>
 
         </div>
     </div>
+
+    
 
 
     <script>

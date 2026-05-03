@@ -145,15 +145,17 @@
                 {% for game in games %}
                     {% if game == 0 %}
 
-                        <h2> You have no active or ended games</h2>
+                        <h2 style="text-align: center;"> You have no active or ended games</h2>
                         <a href="/wait" class="btn" >Start a Match</a>
 
                     {% else %} 
                         <p class="game"> Game ID: {{ game }} </p>
-                        <form action="/join" method="post" style="display:inline;">
-                            <input type="hidden" name="gameId" value="{{ game }}">
-                            <button type="submit">Join Game</button>
-                        </form>
+                        <div class="b" style="width: 100%;">
+                            <form action="/join" method="post" style="display:inline; width: 100%;">
+                                <input type="hidden" name="gameId" value="{{ game }}">
+                                <button type="submit">Join Game</button>
+                            </form>
+                        </div>
 
                     {% endif %}                   
 
