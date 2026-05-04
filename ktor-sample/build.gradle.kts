@@ -21,6 +21,20 @@ repositories {
 
 tasks.test {
     useJUnitPlatform()
+    dependsOn("jsTest")
+}
+
+tasks.register<Exec>("jsTest") {
+    dependsOn("npmInstall")
+    workingDir = file("src/test/js")
+    environment("test_output", file("build/test-results/test"))
+    commandLine("cmd", "/c", "npm", "run", "test")
+    isIgnoreExitValue = false
+}
+
+tasks.register<Exec>("npmInstall") {
+    workingDir = file("src/test/js")
+    commandLine("cmd", "/c", "npm", "install")
 }
 
 dependencies {
