@@ -167,8 +167,11 @@ fun Application.configureRouting() {
             }
             val playerGames = gameManager.getGames(playerId, status)
 
-            call.respondTemplate("search.peb",mapOf("games" to playerGames)
-            )
+            if (playerGames.isEmpty()){
+                return@get call.respondTemplate("search.peb", mapOf("games" to 0))
+            }else{
+                call.respondTemplate("search.peb",mapOf("games" to playerGames))
+            }
         }
 
         //load the game

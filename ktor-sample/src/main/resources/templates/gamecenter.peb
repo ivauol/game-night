@@ -70,32 +70,7 @@
             text-shadow: 0 4px 25px rgba(0,0,0,0.35);
         }
 
-        .search-container {
-            max-width: 500px;
-            margin: 0 auto 40px;
-        }
 
-        .search-container form {
-            display: flex;
-            gap: 12px;
-        }
-
-        input[type=text] {
-            flex: 1;
-            padding: 14px 16px;
-            border-radius: 14px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.08);
-            color: white;
-            outline: none;
-            font-size: 1rem;
-        }
-
-        input::placeholder {
-            color: rgba(255,255,255,0.45);
-        }
-
-        .search-btn,
         .play-btn {
             border: none;
             text-decoration: none;
@@ -110,7 +85,6 @@
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
-        .search-btn:hover,
         .play-btn:hover {
             transform: translateY(-3px) scale(1.03);
             box-shadow: 0 12px 30px rgba(139,92,246,0.45);

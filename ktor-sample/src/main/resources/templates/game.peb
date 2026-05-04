@@ -197,26 +197,6 @@
             box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
         }
 
-            
-        .btn {
-            margin-top:6px;
-            border: none;
-            text-decoration: none;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            padding: 18px 22px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
-            cursor: pointer;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-        
-        .btn:hover { 
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
-        }
 
         .username_btn {
             display:center;
@@ -417,8 +397,6 @@
     </div>
 
     
-
-
     <script>
         //define global variables
         window.squares = [];
