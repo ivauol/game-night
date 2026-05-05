@@ -1,7 +1,11 @@
+import com.github.gradle.node.npm.task.NpmInstallTask
+import com.github.gradle.node.npm.task.NpmTask
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     kotlin("plugin.serialization") version "1.9.10"
+    id("com.github.node-gradle.node") version "7.0.2"
 }
 
 group = "com.example"
@@ -15,6 +19,12 @@ kotlin {
     jvmToolchain(21)
 }
 
+node {
+    download.set(true)
+    version.set("24.15.0")
+    npmVersion.set("11.12.1")
+}
+
 repositories {
     mavenCentral()
 }
@@ -24,17 +34,14 @@ tasks.test {
     dependsOn("jsTest")
 }
 
-tasks.register<Exec>("jsTest") {
-    dependsOn("npmInstall")
-    workingDir = file("src/test/js")
-    environment("test_output", file("build/test-results/test"))
-    commandLine("cmd", "/c", "npm", "run", "test")
-    isIgnoreExitValue = false
+tasks.named<NpmInstallTask>("npmInstall") {
+    workingDir.set(file("src/test/js"))
 }
 
-tasks.register<Exec>("npmInstall") {
-    workingDir = file("src/test/js")
-    commandLine("cmd", "/c", "npm", "install")
+tasks.register<NpmTask>("jsTest") {
+    dependsOn("npmInstall")
+    workingDir.set(file("src/test/js"))
+    args.set(listOf("run", "test"))
 }
 
 dependencies {

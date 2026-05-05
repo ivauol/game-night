@@ -3,7 +3,7 @@ module.exports = {
     reporters: [
         "default",
         ["jest-junit", {
-            outputDirectory: process.env.test_output,
+            outputDirectory: "../../../build/test-results/jstest",
             outputName: "TEST-JsTest.xml"
         }]
     ]
