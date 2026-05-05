@@ -96,7 +96,7 @@ fun Application.configureRouting() {
             var userExists = false
             var userId : EntityID<Int>? = null
 
-            transaction {
+            transaction { 
 
                 val user = Users.selectAll().where { Users.username eq givenUsername }.singleOrNull()
 
@@ -222,8 +222,11 @@ fun Application.configureRouting() {
             }
             val playerGames = gameManager.getGames(playerId, status)
 
-            call.respondTemplate("search.peb",mapOf("games" to playerGames)
-            )
+            if (playerGames.isEmpty()){
+                return@get call.respondTemplate("search.peb", mapOf("games" to 0))
+            }else{
+                call.respondTemplate("search.peb",mapOf("games" to playerGames))
+            }
         }
 
         //load the game
@@ -244,6 +247,10 @@ fun Application.configureRouting() {
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
             call.respondTemplate("game.peb", mapOf("gameId" to gameId, "boardString" to game.boardState, "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "current" to game.current, "winner" to game.winCheck(game.current)))
+        }
+
+        get("/chess"){
+            call.respondTemplate("chess.peb", mapOf())
         }
 
         //to set the player for testing

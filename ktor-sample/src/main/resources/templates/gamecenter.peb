@@ -61,7 +61,7 @@
         }
 
         h1 {
-            color:#4d86e4;
+            color:#4729ec;
             font-family: sans-serif;
             text-align: center;
             font-size: 5rem;
@@ -189,11 +189,11 @@
             </div>
 
             <div class="game-card">
-                <img class="game-image" src="${checkersImageUrl}" alt=" Game cover">
+                <img class="game-image" src="/images/chessboard.png" alt=" Chess cover">
                 <div class="game-info">
-                    <h2>♟ Other Game</h2>
+                    <h2>♟ Chess </h2>
                     <p></p>
-                    <a href="#" class="play-btn">Play Now</a>
+                    <a href="/chess" class="play-btn">Play Now</a>
                 </div>
             </div>
         </div>

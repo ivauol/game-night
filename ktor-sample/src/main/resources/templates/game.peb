@@ -237,7 +237,7 @@
 
         .container {
             width: 25%;
-            max-width: 1000px;
+            max-width: 1000px; 	
             padding: 40px;
             border-radius: 24px;
             background: rgba(255,255,255,0.06);
@@ -251,35 +251,33 @@
         .popup {
             position: relative;
             text-align: center;
-            display: inline-block;
+            display: center;
             cursor: pointer;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
         }   
 
         /* The actual popup */
         .popup .popuptext {
             visibility: hidden;
-            width: 400px;
+            max-width: 400px;
+            max-height: calc(100vh - 160px);
             background-color: #93a1e1;
             color: #fff;
             text-align: center;
             border-radius: 6px;
-            padding: 8px 0;
+            padding: 10px 0;
             position: absolute;
             z-index: 1;
             bottom: 125%;
-            left: 50%;
-            margin-left: -80%;
+            left: 5%;
+            right:5%;
         }
 
 
         /* Toggle this class - hide and show the popup */
         .popup .show {
             visibility: visible;
-            -webkit-animation: fadeIn 1s;
+            -webkit-animation: fadeIn 5s;
             animation: fadeIn 1s;
         } 
 
@@ -308,7 +306,6 @@
             {% endif %}
         </div>    
     </div>
-
 
 
     {#display black's id#}
