@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.io.File
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
@@ -37,7 +38,7 @@ fun Application.configureDatabase() {
                     it[white_id] = record.white_id
                     it[black_id] = record.black_id
                     it[board] = record.board
-                    it[history] = record.history
+                    it[history] = record.history.replace("$", "\"").replace("|", ",")
                     it[current] = record.current
                     it[start_time] = record.start_time
                     it[end_time] = record.end_time

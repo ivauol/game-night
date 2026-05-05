@@ -95,8 +95,7 @@
             margin-top: 20px;
         }
 
-        button,
-        .btn {
+        .b {
             margin-top:6px;
             border: none;
             text-decoration: none;
@@ -111,11 +110,56 @@
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
         
-        button:hover,
-        .btn:hover{ 
+        .b:hover{ 
             transform: translateY(-3px) scale(1.03);
             box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
         }
+
+        #join_game {
+            width:100% !important;
+            text-align: center;
+            margin-top:6px;
+            border: none;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 18px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        
+        #join_game:hover{ 
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
+        }
+
+        .no_games_btn {
+            margin-top:6px;
+            border: none;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 18px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            display: inline-block;
+            width:100%;
+            text-align: center;
+        }
+        
+        .no_games_btn:hover{ 
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
+        }
+
 
     </style>
 </head>
@@ -165,51 +209,5 @@
 
     </div>
 
-    <div class="icon-bar">
-        <a href="/gamecenter"><i class="fa fa-home"></i></a>
-
-        <div style="float: right;">
-
-            {% if login %}
-                <a href="/login" class="btn" style="font-size:16px">Login</a>
-                <a href="/register" class="btn" style="font-size:16px" >Register</a>
-            {% else %}
-                <a href="/stats" class="btn" style="font-size:16px">Profile</a>
-                
-                <form action="/logout" method="post" style="display:inline;">
-                    <button class="btn" type="submit">Logout</button>
-                </form>
-            {% endif %}
-        </div>
-        
-    </div>
-    <div class="glow"></div>
-
-    <div class="flex-container">
-        <div class= "form-container">
-            <ul>
-                {% for game in games %}
-                    {% if game == 0 %}
-
-                        <h2> You have no active or ended games</h2>
-                        <a href="/wait" class="btn" >Start a Match</a>
-
-                    {% else %} 
-                        <p class="game"> Game ID: {{ game }} </p>
-                        <form action="/join" method="post" style="display:inline;">
-                            <input type="hidden" name="gameId" value="{{ game }}">
-                            <button type="submit">Join Game</button>
-                        </form>
-
-                    {% endif %}                   
-
-                {% endfor %}
-            </ul>
-            
-        </div>
-
-    </div>
-
 </body>
-</html>
 </html>

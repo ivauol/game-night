@@ -12,6 +12,8 @@ import io.ktor.server.http.content.*
 import io.ktor.server.sessions.*
 import io.ktor.server.util.getOrFail
 import kotlinx.serialization.Serializable
+import io.ktor.util.*
+import java.security.SecureRandom
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.*
@@ -220,11 +222,8 @@ fun Application.configureRouting() {
             }
             val playerGames = gameManager.getGames(playerId, status)
 
-            if (playerGames.isEmpty()){
-                return@get call.respondTemplate("search.peb", mapOf("games" to 0))
-            }else{
-                call.respondTemplate("search.peb",mapOf("games" to playerGames))
-            }
+            call.respondTemplate("search.peb",mapOf("games" to playerGames)
+            )
         }
 
         //load the game
@@ -234,7 +233,7 @@ fun Application.configureRouting() {
             ?: return@get call.respondRedirect("/login")
 
             val playerId = session.playerId
- 
+
             val (username, email) = transaction {
                 //var userDetails = Users.selectAll()
                 //.firstOrNull{it[Users.id].value == playerId}
@@ -247,10 +246,7 @@ fun Application.configureRouting() {
                     Pair("", "")
                 }
             }
-            if (username == ""){
-                return@get call.respondRedirect("/gamecenter")
-            }
-    
+            
             if (playerId == 0){
                 return@get call.respondRedirect("/login")
             }
@@ -261,11 +257,7 @@ fun Application.configureRouting() {
             val game = gameManager.createGame(gameId, playerId)
             if (game == null){return@get call.respond(HttpStatusCode.BadRequest, "Game not found")}
 
-            call.respondTemplate("game.peb", mapOf("username" to username, "email" to email, "gameId" to gameId, "boardString" to game.boardState,
-            "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "current" to game.current, "winner" to game.winCheck(game.current)))
-            call.respondTemplate("game.peb", mapOf("username" to username, "email" to email, "gameId" to gameId, "boardString" to game.boardState,
-            "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "current" to game.current, "winner" to game.winCheck(game.current)))
-        }
+            call.respondTemplate("game.peb", mapOf("username" to username, "email" to email, "gameId" to gameId, "boardString" to game.boardState, "black" to game.black_id, "white" to game.white_id, "playerId" to playerId, "current" to game.current, "winner" to game.winCheck(game.current)))}
 
         //to set the player for testing
         post("/player"){
@@ -403,12 +395,9 @@ fun Application.configureRouting() {
 
 
 private suspend fun ApplicationCall.displayLogIn(){
-    respondTemplate("login-page.peb", mapOf()) // link to userdatabase
+    respondTemplate("login.peb", mapOf()) // link to userdatabase
 }
 
-private suspend fun ApplicationCall.displayRegister() {
-    respondTemplate("accountcreate.peb", mapOf()) // link to userdatabase
-}
 
 private suspend fun ApplicationCall.displayGameCenter(){
     val image = "/workspaces/game-night/ktor-sample/src/main/resources/static/images/checkers-cover.png"

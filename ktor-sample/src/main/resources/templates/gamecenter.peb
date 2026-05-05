@@ -40,12 +40,8 @@
             margin-bottom: 20px;
             position: relative;
             z-index: 2;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 2;
         }
 
-        .icon-bar a {
         .icon-bar a {
             display: inline-block;
             padding: 18px 24px;
@@ -54,7 +50,6 @@
             transition: 0.3s ease;
         }
 
-        .icon-bar a:hover {
         .icon-bar a:hover {
             background: rgba(255,255,255,0.12);
         }
@@ -68,10 +63,7 @@
         h1 {
             color:#4d86e4;
             font-family: sans-serif;
-            color:#4d86e4;
-            font-family: sans-serif;
             text-align: center;
-            font-size: 5rem;
             font-size: 5rem;
             letter-spacing: 4px;
             margin-bottom: 30px;
@@ -176,10 +168,7 @@
             {% else %}
                 <a href="/stats" class="btn" style="font-size:16px">Profile</a>
                 
-                <a href="/stats" class="btn">Profile</a>
-                
                 <form action="/logout" method="post" style="display:inline;">
-                    <button class="btn" type="submit">Logout</button>
                     <button class="btn" type="submit">Logout</button>
                 </form>
             {% endif %}
