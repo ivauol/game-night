@@ -6,20 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkers Game</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, #0f172a, #1e293b, #312e81);
             color: white;
-            padding: 20px;
+            overflow-x: hidden;
         }
-
         .glow {
             position: fixed;
             width: 500px;
@@ -31,7 +24,6 @@
             left: 5%;
             z-index: 0;
         }
-
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -41,18 +33,13 @@
             position: relative;
             z-index: 2;
         }
-
         .icon-bar a {
             display: inline-block;
             padding: 18px 24px;
             color: white;
             font-size: 28px;
-            transition: 0.3s ease;
         }
 
-        .icon-bar a:hover {
-            background: rgba(255,255,255,0.12);
-        }
 
         .game-panel {
             max-width: 900px;
@@ -167,19 +154,135 @@
 
         #move::placeholder { color: rgba(255,255,255,0.45); }
 
+        .popup,
         button {
-            padding: 14px 24px;
+            margin-top:6px;
             border: none;
-            border-radius: 999px;
+            text-decoration: none;
             color: white;
+            font-size: 1rem;
             font-weight: bold;
-            cursor: pointer;
+            padding: 18px 22px;
+            border-radius: 999px;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             box-shadow: 0 8px 25px rgba(59,130,246,0.35);
-            transition: transform 0.25s ease;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        
+        .popup:hover,
+        button:hover { 
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
         }
 
-        button:hover { transform: translateY(-2px); }
+        .button {
+            display:center;
+            margin-top:6px;
+            border: none;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 18px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        
+        .button:hover { 
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
+        }
+
+
+        .username_btn {
+            display:center;
+            margin-top:2px;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 18px 22px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #4136e0);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+            cursor: pointer;
+            font-size:16px;
+            margin-right: 5px;
+        }
+
+        .flex-container {
+            min-height: calc(100vh - 160px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 30px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            margin: 5px;
+
+        } 
+
+        .container {
+            width: 25%;
+            max-width: 1000px;
+            padding: 40px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            margin: 5px;
+
+        }
+
+        .popup {
+            position: relative;
+            text-align: center;
+            display: inline-block;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }   
+
+        /* The actual popup */
+        .popup .popuptext {
+            visibility: hidden;
+            width: 400px;
+            background-color: #93a1e1;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80%;
+        }
+
+
+        /* Toggle this class - hide and show the popup */
+        .popup .show {
+            visibility: visible;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        } 
+
     </style>
 </head>
 <body>
@@ -187,49 +290,113 @@
 
     <div class="icon-bar">
         <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
+        
+
+        <div style="float: right;">
+        
+            <b class="username_btn"> {{username}} </b>
+
+            {% if login %}
+                <a href="/login" class="button" style="font-size:16px">Login</a>
+                <a href="/register" class="button" style="font-size:16px" >Register</a>
+            {% else %}
+                <a href="/stats" class="button" style="font-size:16px">Profile</a>
+                
+                <form action="/logout" method="post" style="display:inline;">
+                    <button class="button" type="submit" margin-left="2px">Logout</button>
+                </form>
+            {% endif %}
+        </div>    
     </div>
+
+
 
     {#display black's id#}
-    <div style="text-align:center; margin-top:20px;" id="blackPlayer">
-        Black: <span id="blackId">{{ black }}</span>
-    </div>
 
-    <div class="game-panel">
-        <h1>♟ Checkers Game</h1>
-        <p style="text-align:center;">Player ID: {{ playerId }}</p>
+    <div class="flex-container">
+        <div class="form-container">
+            <div class="game-panel">
+                <h1>♟ Checkers Game</h1>
 
-        <div class="board-container">
-            <table class="checkers-board">
-                <tr>
-                    <td></td>
-                    {% for col in ['A','B','C','D','E','F','G','H'] %}
-                        <td class="label">{{ col }}</td>
-                    {% endfor %}
-                </tr>
-                {% for row in [1,2,3,4,5,6,7,8] %}
-                <tr>
-                    <td class="label">{{ row }}</td>
-                    {% for col in [1,2,3,4,5,6,7,8] %}
-                        <td class="square {% if (row + col) is even %}light{% else %}dark{% endif %}"></td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
+                <div class="board-container">
+                    <table class="checkers-board">
+                        <tr>
+                            <td></td>
+                            {% for col in ['A','B','C','D','E','F','G','H'] %}
+                                <td class="label">{{ col }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% for row in [1,2,3,4,5,6,7,8] %}
+                        <tr>
+                            <td class="label">{{ row }}</td>
+                            {% for col in [1,2,3,4,5,6,7,8] %}
+                                <td class="square {% if (row + col) is even %}light{% else %}dark{% endif %}"></td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="container">
+        
+            <div style="text-align:center; margin-top:20px;" id="blackPlayer">
+                Black: <span id="blackId">{{ black }}</span>
+            </div>
+
+            <p style="text-align:center;">Your ID: {{ playerId }}</p>
+
+            <div style="text-align:center; margin-top:20px;" id="whitePlayer">
+                Opponents ID:<span id="whiteId"> {{ white }}</span> <br>
+            </div>
+
+            <p id="errorBox" style="text-align:center"></p>
+            <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
+
+            <div style="text-align:center; margin-top:10px;">
+                <button type="button" id="submitMoveBtn" style="font-size:18px">Submit Move</button>
+                <button type="button" id="clearMoveBtn" style="font-size:18px">Clear</button>
+            </div>
+            
+            <div class="form-container ">
+                <p style= "font-size: 20px; text-align: center">
+                    1. Select the <em> checker </em> you want to move <br><br>
+                    2. Select the <em> square </em> you want to move to <br><br>
+                    3. Submit the move!
+                </p>
+
+            </div>
+            <br>
+            <div style="width:100%; font-size:18px" 
+                class="popup" onclick="myFunction()" style="text-align: center;" > HOW TO PLAY
+                <span class="popuptext" id="myPopup">
+                    <p>Checkers is a two-player game where the objective is to capture all of your opponent's pieces
+                         or block them so they cannot move. 
+                        <br> 1. Each player starts with 12 pieces placed on the dark squares of 
+                        the board.<br> 2. Players take turns moving their pieces diagonally 
+                        forward to an adjacent empty square. <br> 3. If an opponent's piece is 
+                        adjacent and the square beyond it is empty, you can jump over it 
+                        to capture it. <br> 4. If a piece reaches the opposite end of the board, it becomes a king and 
+                        can move both forward and backward. 
+                        <br> 5. The first player to capture all opponent pieces
+                         or block them wins the game!</p>
+                </span> 
+            </div>
+
+            <script>
+                // When the user clicks on div, open the popup
+                function myFunction() {
+                    var popup = document.getElementById("myPopup");
+                    popup.classList.toggle("show");
+                }
+            </script>
+
         </div>
     </div>
 
-    <div style="text-align:center; margin-top:20px;" id="whitePlayer">
-        White: <span id="whiteId">{{ white }}</span>
-    </div>
-
-    <p id="errorBox" style="text-align:center"></p>
-    <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
-
-    <div style="text-align:center; margin-top:10px;">
-        <button type="button" id="submitMoveBtn">Submit Move</button>
-        <button type="button" id="clearMoveBtn">Clear</button>
-    </div>
-
+    
     <script>
         //define global variables
         window.squares = [];
