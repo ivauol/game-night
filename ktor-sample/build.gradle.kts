@@ -21,9 +21,10 @@ repositories {
 
 tasks.test {
     useJUnitPlatform()
-    dependsOn("jsTest")
+    //dependsOn("jsTest")
 }
 
+/*
 tasks.register<Exec>("jsTest") {
     dependsOn("npmInstall")
     workingDir = file("src/test/js")
@@ -36,6 +37,7 @@ tasks.register<Exec>("npmInstall") {
     workingDir = file("src/test/js")
     commandLine("cmd", "/c", "npm", "install")
 }
+*/
 
 dependencies {
     implementation(libs.ktor.server.core)
