@@ -51,7 +51,7 @@ fun Application.configureRouting() {
 
         post("/login") {
             val params = call.receiveParameters()
-            val username = params.getOrFail("username")
+            val username = params.getOrFail("username").lowercase()
             val password = params.getOrFail("password")
 
             var user: User? = null // create user before transaction block
@@ -86,7 +86,7 @@ fun Application.configureRouting() {
         post("/register") {
             val params = call.receiveParameters()
             val givenEmail = params.getOrFail("email")
-            val givenUsername = params.getOrFail("username")
+            val givenUsername = params.getOrFail("username").lowercase()
             val givenPass = params.getOrFail("password")
 
             if (givenEmail.trim() == "" || givenUsername.trim() == "" || givenPass.trim() == "") {
