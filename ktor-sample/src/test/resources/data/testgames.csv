@@ -1,0 +1,3 @@
+game_id,black_id,white_id,board,history,current,start_time,end_time,status,winner_id
+1,1,2,.b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b,{},black,1680000000100,,active,
+2,1,2,.b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b,{},black,1680000000100,1680000000200,ended,2

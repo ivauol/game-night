@@ -166,3 +166,13 @@ function clearSelection() {
     });
     previewMove();
 }
+
+window.buttonVisible = buttonVisible;
+window.previewMove = previewMove;
+window.parseBoardString = parseBoardString;
+window.updateBoardHTML = updateBoardHTML;
+window.currentPlayer = currentPlayer;
+window.winCheck = winCheck;
+window.handleSquareClick = handleSquareClick;
+window.submitMove = submitMove;
+window.clearSelection = clearSelection;
