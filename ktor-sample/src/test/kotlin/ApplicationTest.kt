@@ -16,6 +16,13 @@ import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
+import io.ktor.server.application.*
+import io.ktor.server.websocket.*
+import io.ktor.websocket.*
+import io.ktor.server.sessions.*
+import io.ktor.util.*
+import java.security.SecureRandom
+
 import io.ktor.client.plugins.cookies.*
 
 @Suppress("unused")
@@ -26,7 +33,7 @@ class ApplicationTest: DescribeSpec({
         Database.connect("jdbc:sqlite:./src/test/resources/data/testusers.db", driver = "org.sqlite.JDBC")
 
         transaction {
-            SchemaUtils.create(Users)
+            SchemaUtils.create(Users, Games)
         }
 
         transaction{
@@ -35,15 +42,48 @@ class ApplicationTest: DescribeSpec({
                 it[id] = 1
                 it[username] = "Eve"
                 it[email] = "eve@example.com"
-                it[password] = "eve123"
+                it[password] = Hasher.hashPassword("eve123")
+            }
+            Users.insert {
+                it[id] = 2
+                it[username] = "Frank"
+                it[email] = "frank@example.com"
+                it[password] = Hasher.hashPassword("frank123")
+            }
+            Games.insert {
+                it[white_id] = 2
+                it[black_id] = 1
+                it[board] = ".b.b.b.bb.b.b.b..b.b.b.b................w.w.w.w..w.w.w.ww.w.w.w.b"
+                it[history] = "{}"
+                it[current] = "black"
+                it[start_time] = 16
+                it[end_time] = null
+                it[status] = "active"
+                it[winner_id] = null
+        }
+        }
+    }
+
+    fun Application.testModule(){
+        install(WebSockets){}
+        install(Sessions) {
+            cookie<PlayerSession>("player_session") {
+                cookie.path = "/"
+                cookie.httpOnly = true
+                val key = ByteArray(32)
+                SecureRandom().nextBytes(key)
+                transform(SessionTransportTransformerMessageAuthentication(key))
             }
         }
+        testDb()
+        configureTemplates()
+        configureRouting()
     }
 
     describe("/") {
         it("Should yield the home page") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -59,7 +99,7 @@ class ApplicationTest: DescribeSpec({
         it("Should yield the login page") {
             // check for if logged in already?
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -71,14 +111,14 @@ class ApplicationTest: DescribeSpec({
 
         it("Post request with correct login") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
                 }
                 val response = client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
                     // somehow do this with "fake" data
                 }
                 response.status shouldBe HttpStatusCode.Found
@@ -88,7 +128,7 @@ class ApplicationTest: DescribeSpec({
 
         it("Post request with incorrect login") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -108,7 +148,7 @@ class ApplicationTest: DescribeSpec({
         // check for if logged in already?
         it("Should yield the register page") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -120,7 +160,7 @@ class ApplicationTest: DescribeSpec({
 
         it("Register attempt with non preexisting user") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 testDb()
                 val client = createClient {
                     followRedirects = false
@@ -130,24 +170,22 @@ class ApplicationTest: DescribeSpec({
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
                     setBody(listOf("username" to "Fake", "email" to "fake@example.com", "password" to "fake123").formUrlEncode())
                 }
-                // these post requests are persisting :( fix!!
-                // response.status shouldBe HttpStatusCode.Found
-                // response.headers[HttpHeaders.Location] shouldBe "/gamecenter"
+                response.status shouldBe HttpStatusCode.Found
+                response.headers[HttpHeaders.Location] shouldBe "/gamecenter"
             }
         }
 
         it("Register attempt with preexisting user") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
                 }
                 val response = client.post("/register") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                    setBody(listOf("username" to "Alice", "email" to "alice@example.com", "password" to "alice123").formUrlEncode())
+                    setBody(listOf("username" to "Eve", "email" to "eve@example.com", "password" to "eve123").formUrlEncode())
                 }
-                //  these post requests are persisting :( fix!!
                 response.status shouldBe HttpStatusCode.Found
                 response.headers[HttpHeaders.Location] shouldBe "/register?message=User%20exists."
             }
@@ -157,7 +195,7 @@ class ApplicationTest: DescribeSpec({
     describe("/stats") {
         it("Should redirect to login page without a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -170,14 +208,14 @@ class ApplicationTest: DescribeSpec({
 
         it("Should yield the stats page with a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
                 }
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
                     // somehow do this with "fake" data
                 }
                 val response = client.get("/stats")
@@ -189,7 +227,7 @@ class ApplicationTest: DescribeSpec({
     describe("/logout") {
         it("Should yield the logout") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -204,7 +242,7 @@ class ApplicationTest: DescribeSpec({
     describe("/gamecenter") {
         it("Should redirect to login page without a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -217,14 +255,14 @@ class ApplicationTest: DescribeSpec({
 
         it("Should yield the game centre page with a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
                 }
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
                     // somehow do this with "fake" data
                 }
                 val response = client.get("/gamecenter")
@@ -236,7 +274,7 @@ class ApplicationTest: DescribeSpec({
     describe("/menu") {
         it("Should redirect to login page without a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -249,15 +287,14 @@ class ApplicationTest: DescribeSpec({
 
         it("Should yield the menu page with a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
                 }
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
-                    // somehow do this with "fake" data
+                    setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
                 }
                 val response = client.get("/menu")
                 response.status shouldBe HttpStatusCode.OK
@@ -268,7 +305,7 @@ class ApplicationTest: DescribeSpec({
     describe("/wait") {
         it("Should redirect to login page without a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -281,14 +318,14 @@ class ApplicationTest: DescribeSpec({
 
         it("Should yield the wait page with a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
                 }
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
                     // somehow do this with "fake" data
                 }
                 val response = client.get("/wait")
@@ -300,7 +337,7 @@ class ApplicationTest: DescribeSpec({
     describe("/search") {
         it("Should redirect to login page without a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -313,14 +350,14 @@ class ApplicationTest: DescribeSpec({
 
         it("Should yield the search page with a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
                 }
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
                     // somehow do this with "fake" data
                 }
                 val response = client.get("/search")
@@ -332,7 +369,7 @@ class ApplicationTest: DescribeSpec({
     describe("/game") {
         it("Should redirect to login page without a session") {
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -347,17 +384,16 @@ class ApplicationTest: DescribeSpec({
             // OK actually it shouldn't
             // Redirect to the gamecenter if there's no game ID?
             testApplication {
-                application { module() }
+                application { testModule() }
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
                 }
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
-                    // somehow do this with "fake" data
+                    setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
                 }
-                val response = client.get("/game")
+                val response = client.get("/game?gameId=1")
                 //response.status shouldBe HttpStatusCode.OK
             }
         }

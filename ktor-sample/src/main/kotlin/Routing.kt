@@ -46,6 +46,7 @@ fun Application.configureRouting() {
 
         get("/login") {
             val message = call.request.queryParameters["message"] ?: ""
+            println("hi")
             call.respondTemplate("login.peb", mapOf("message" to message))
         }
 
