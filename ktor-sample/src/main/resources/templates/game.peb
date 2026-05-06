@@ -350,7 +350,7 @@
 
         <div class="container">
             <div class="card">
-                {% if black == playerId %}
+                {% if blackId == playerId %}
                     <p style="text-align:center; font-size: 18px;">You are the <strong>black</strong> checkers</p>
                 {% else %}
                     <p style="text-align:center;">You are the <strong>white</strong> checkers</p>
@@ -407,10 +407,10 @@
         //define global variables
         window.squares = [];
         window.player = "";
-        if ({{black}} == {{playerId}}){
+        if ({{blackId}} == {{playerId}}){
             window.player = "black";
         }
-        else if ({{white}} == {{playerId}}){
+        else if ({{whiteId}} == {{playerId}}){
             window.player = "white";
         }
         window.current = "{{current}}";
