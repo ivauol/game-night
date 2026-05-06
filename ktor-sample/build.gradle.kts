@@ -21,8 +21,8 @@ kotlin {
 
 node {
     download.set(true)
-    version.set("24.15.0")
-    npmVersion.set("11.12.1")
+    version.set("20.11.1")
+    npmVersion.set("10.2.4")
 }
 
 repositories {
@@ -31,15 +31,9 @@ repositories {
 
 tasks.test {
     useJUnitPlatform()
-    dependsOn("jsTest")
-}
-
-tasks.named<NpmInstallTask>("npmInstall") {
-    workingDir.set(file("src/test/js"))
 }
 
 tasks.register<NpmTask>("jsTest") {
-    dependsOn("npmInstall")
     workingDir.set(file("src/test/js"))
     args.set(listOf("run", "test"))
 }
