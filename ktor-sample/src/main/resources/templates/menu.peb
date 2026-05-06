@@ -24,6 +24,7 @@
             left: 5%;
             z-index: 0;
         }
+
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -52,47 +53,6 @@
             text-align: center;
         }
 
-        .flex-container {
-            min-height: calc(100vh - 160px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .form-container {
-            width: 100%;
-            max-width: 460px;
-            padding: 40px;
-            border-radius: 24px;
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(14px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-            border: 1px solid rgba(255,255,255,0.08);
-            margin: 5px;
-
-        } 
-
-        .form-container a{
-            font-size: 30px;
-            
-        }
-        .text {
-            text-align: center;
-            color: rgba(255,255,255,0.75);
-        }
-
-        .text a {
-            color: #93c5fd;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .form-container:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 30px rgba(83, 32, 201, 0.45);
-        }
-
         .btn {
             margin-top:6px;
             border: none;
@@ -113,6 +73,61 @@
             box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
         }
 
+        .flex-container {
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width:90%;
+            align-items:center;
+            margin-left:5%;
+            margin-right:5%;
+        }
+
+        .form-container {
+            width: 100%;
+            min-height: 500px
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            margin: 5px;
+            cursor:pointer;
+
+        } 
+
+        a {
+            text-decoration:none;
+        }
+
+        .form-container:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(83, 32, 201, 0.45);
+        }
+
+        .form-container i{
+            font-size: 50px;
+            margin-bottom: 20px;
+            color:#93c5fd;
+        }
+
+        .form-container words {
+            text-decoration: none;
+            color: #93c5fd;
+            font-size: 2.5rem;
+            font-weight: bold;
+
+        }
+
+        .form-container p{
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 8px;
+            color:white;
+        }
 
     </style>
 </head>
@@ -138,16 +153,30 @@
 
 
     <body>
-        <div class= "flex-container">
-            <div class= "form-container">        
-                <p class="text"><a href="/search?status=active">Active Games</a></p>         
-            </div>
-            <div class= "form-container">        
-                <p class="text"><a href="/search?status=ended">Ended Games</a></p>       
-            </div>
-            <div class= "form-container">         
-                <p class="text"> <a href="/wait">Make New Game</a></p>        
-            </div>
+        <div class="flex-container">
+            <a href="/search?status=active">
+                <div class= "form-container">        
+                    <i class="fa fa-play-circle"></i>
+                    <words>Active Games</words>
+                    <p>Join ongoing matches</p>
+                </div>
+            </a>
+
+            <a href="/search?status=ended">
+                <div class= "form-container">        
+                    <i class="fa fa-history"></i>
+                    <words>Ended Games</words>
+                    <p>View completed games</p>     
+                </div>
+            </a>
+
+            <a href="/wait">
+                <div class= "form-container" >         
+                    <i class="fa fa-plus-circle"></i>
+                    <words> New Game</words>
+                    <p>Create a new session</p>
+                </div>
+            </a>
         </div>
     </body>
 
