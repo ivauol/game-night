@@ -354,8 +354,8 @@
                     <p style="text-align:center; font-size: 18px;">You are the <strong>black</strong> checkers</p>
                 {% else %}
                     <p style="text-align:center;">You are the <strong>white</strong> checkers</p>
-
                 {% endif %}
+                <p id="turn" style="text-align:center"></p>
 
                 <p id="errorBox" style="text-align:center"></p>
                 <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
@@ -427,7 +427,7 @@
             //prepare all visual elements on load
             const board = parseBoardString(boardString);
             updateBoardHTML(board);
-            currentPlayer("{{current}}");
+            currentPlayer();
             winCheck("{{winner}}");
             buttonVisible();
 
@@ -451,8 +451,8 @@
                 const parts = event.data.split(",")
                 const newBoard = parseBoardString(parts[0]);
                 updateBoardHTML(newBoard);
-                currentPlayer(parts[2]);
                 window.current = parts[2];
+                currentPlayer();
                 
                 window.winner = winCheck(parts[1]);
                 buttonVisible();

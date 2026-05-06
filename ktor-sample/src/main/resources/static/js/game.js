@@ -73,16 +73,14 @@ function updateBoardHTML(board) {
 }
 
 //highlight whos turn it is
-function currentPlayer(turn) {
-    const black = document.getElementById("blackId");
-    const white = document.getElementById("whiteId");
+function currentPlayer() {
+    let turn = document.getElementById("turn");
 
-    if (turn === "black") {
-        black.style.fontWeight = "bold";
-        white.style.fontWeight = "normal";
-    } else {
-        white.style.fontWeight = "bold";
-        black.style.fontWeight = "normal";
+    if (window.player == window.current){
+        turn.innerText = "It is your turn";
+    }
+    else{
+        turn.innerText = "It is opponent's turn";
     }
 }
 
