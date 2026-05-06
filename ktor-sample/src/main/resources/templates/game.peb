@@ -219,7 +219,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
+            padding: 8px;
         }
 
         .form-container {
@@ -227,16 +227,12 @@
             max-width: 1000px;
             padding: 30px;
             border-radius: 24px;
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(14px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-            border: 1px solid rgba(255,255,255,0.08);
-            margin: 5px;
+            background: none;
 
         } 
 
         .container {
-            width: 25%;
+            width: 40%;
             max-width: 1000px; 	
             padding: 40px;
             border-radius: 24px;
@@ -259,9 +255,9 @@
         /* The actual popup */
         .popup .popuptext {
             visibility: hidden;
-            max-width: 400px;
-            max-height: calc(100vh - 160px);
-            background-color: #93a1e1;
+            min-width: 400px;
+            max-height: 1200px;
+            background-color: #220c4a;
             color: #fff;
             text-align: center;
             border-radius: 6px;
@@ -269,8 +265,8 @@
             position: absolute;
             z-index: 1;
             bottom: 125%;
-            left: 5%;
-            right:5%;
+            left: 2%;
+            right:2%;
         }
 
 
@@ -280,6 +276,21 @@
             -webkit-animation: fadeIn 5s;
             animation: fadeIn 1s;
         } 
+
+        .card{
+            width:100%;
+            background:rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius:16px;
+            backdrop-filter:blur(12px); 
+            transition: 0.2s; 
+            margin-bottom: 5px;       
+        }
+
+        .card:hover{
+            transform: translateY(-3px);
+            background: rgba(139,92,246,0.15);
+        }
 
     </style>
 </head>
@@ -338,23 +349,24 @@
         </div>
 
         <div class="container">
-        
-            {% if black == playerId %}
-                <p style="text-align:center; font-size: 18px;">You are the <strong>black</strong> checkers</p>
-            {% else %}
-                <p style="text-align:center;">You are the <strong>white</strong> checkers</p>
+            <div class="card">
+                {% if black == playerId %}
+                    <p style="text-align:center; font-size: 18px;">You are the <strong>black</strong> checkers</p>
+                {% else %}
+                    <p style="text-align:center;">You are the <strong>white</strong> checkers</p>
 
-            {% endif %}
+                {% endif %}
 
-            <p id="errorBox" style="text-align:center"></p>
-            <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
+                <p id="errorBox" style="text-align:center"></p>
+                <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
 
-            <div style="text-align:center; margin-top:10px;">
-                <button type="button" id="submitMoveBtn" style="font-size:18px">Submit Move</button>
-                <button type="button" id="clearMoveBtn" style="font-size:18px">Clear</button>
+                <div style="text-align:center; margin-top:10px;">
+                    <button type="button" id="submitMoveBtn" style="font-size:18px">Submit Move</button>
+                    <button type="button" id="clearMoveBtn" style="font-size:18px">Clear</button>
+                </div>
             </div>
             
-            <div class="form-container ">
+            <div class= "card ">
                 <p style= "font-size: 20px; text-align: center">
                     1. Select the <em> checker </em> you want to move <br><br>
                     2. Select the <em> square </em> you want to move to <br><br>
