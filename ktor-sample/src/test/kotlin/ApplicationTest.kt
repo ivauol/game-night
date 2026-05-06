@@ -57,6 +57,7 @@ class ApplicationTest: DescribeSpec({
 
     describe("/login") {
         it("Should yield the login page") {
+            // check for if logged in already?
             testApplication {
                 application { module() }
                 val client = createClient {
@@ -104,6 +105,7 @@ class ApplicationTest: DescribeSpec({
     }
 
     describe("/register") {
+        // check for if logged in already?
         it("Should yield the register page") {
             testApplication {
                 application { module() }
@@ -188,8 +190,13 @@ class ApplicationTest: DescribeSpec({
         it("Should yield the logout") {
             testApplication {
                 application { module() }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/logout")
-                response.status shouldBe HttpStatusCode.OK
+                response.status shouldBe HttpStatusCode.Found
+                response.headers[HttpHeaders.Location] shouldBe "/welcome"
             }
         }
     }
@@ -230,7 +237,10 @@ class ApplicationTest: DescribeSpec({
         it("Should redirect to login page without a session") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/menu")
                 response.status shouldBe HttpStatusCode.Found
                 response.headers[HttpHeaders.Location] shouldBe "/login"
@@ -259,7 +269,10 @@ class ApplicationTest: DescribeSpec({
         it("Should redirect to login page without a session") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/wait")
                 response.status shouldBe HttpStatusCode.Found
                 response.headers[HttpHeaders.Location] shouldBe "/login"
