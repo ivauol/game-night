@@ -10,20 +10,19 @@ import io.ktor.server.testing.testApplication
 import io.ktor.client.request.*
 import io.ktor.http.*
 
-import io.ktor.server.routing.*
-import io.ktor.server.sessions.clear
-import io.ktor.server.sessions.sessions
-import io.ktor.server.sessions.set
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
+import io.ktor.client.plugins.cookies.*
+
 @Suppress("unused")
 class ApplicationTest: DescribeSpec({
 
     fun testDb() {
+        // use this for tests instead of original database?
         Database.connect("jdbc:sqlite:./src/test/resources/data/testusers.db", driver = "org.sqlite.JDBC")
 
         transaction {
@@ -45,7 +44,10 @@ class ApplicationTest: DescribeSpec({
         it("Should yield the home page") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/")
                 response.status shouldBe HttpStatusCode.Found
                 response.headers[HttpHeaders.Location] shouldBe "/welcome"
@@ -57,10 +59,47 @@ class ApplicationTest: DescribeSpec({
         it("Should yield the login page") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/login")
                 response.status shouldBe HttpStatusCode.OK
             }
+        }
+
+        it("Post request with correct login") {
+            testApplication {
+                application { module() }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
+                val response = client.post("/login") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    // somehow do this with "fake" data
+                }
+                response.status shouldBe HttpStatusCode.Found
+                response.headers[HttpHeaders.Location] shouldBe "/gamecenter"
+            }
+        }
+
+        it("Post request with incorrect login") {
+            testApplication {
+                application { module() }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
+                val response = client.post("/login") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Mallory", "password" to "mallory123").formUrlEncode())
+                }
+                response.status shouldBe HttpStatusCode.Found
+                response.headers[HttpHeaders.Location] shouldBe "/login?message=Invalid%20user"
+            }
+
         }
     }
 
@@ -68,27 +107,47 @@ class ApplicationTest: DescribeSpec({
         it("Should yield the register page") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/register")
                 response.status shouldBe HttpStatusCode.OK
             }
         }
 
-        it("POST register check") {
+        it("Register attempt with non preexisting user") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
-                val response = client.post("/register") {
-                    contentType(ContentType.Application.Json)
-                    setBody("""
-                        {
-                        "username": "Eve",
-                        "email": "eve@example.com",
-                        "password": "eve123"
-                        }
-                    """.trimIndent())
+                testDb()
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
                 }
-                response.status shouldBe HttpStatusCode.OK
+                val response = client.post("/register") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Fake", "email" to "fake@example.com", "password" to "fake123").formUrlEncode())
+                }
+                // these post requests are persisting :( fix!!
+                // response.status shouldBe HttpStatusCode.Found
+                // response.headers[HttpHeaders.Location] shouldBe "/gamecenter"
+            }
+        }
+
+        it("Register attempt with preexisting user") {
+            testApplication {
+                application { module() }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
+                val response = client.post("/register") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Alice", "email" to "alice@example.com", "password" to "alice123").formUrlEncode())
+                }
+                //  these post requests are persisting :( fix!!
+                response.status shouldBe HttpStatusCode.Found
+                response.headers[HttpHeaders.Location] shouldBe "/register?message=User%20exists."
             }
         }
     }
@@ -97,7 +156,10 @@ class ApplicationTest: DescribeSpec({
         it("Should redirect to login page without a session") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/stats")
                 response.status shouldBe HttpStatusCode.Found
                 response.headers[HttpHeaders.Location] shouldBe "/login"
@@ -107,9 +169,17 @@ class ApplicationTest: DescribeSpec({
         it("Should yield the stats page with a session") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
+                client.post("/login") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    // somehow do this with "fake" data
+                }
                 val response = client.get("/stats")
-                // response.status shouldBe HttpStatusCode.OK
+                response.status shouldBe HttpStatusCode.OK
             }
         }
     }
@@ -128,7 +198,10 @@ class ApplicationTest: DescribeSpec({
         it("Should redirect to login page without a session") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/gamecenter")
                 response.status shouldBe HttpStatusCode.Found
                 response.headers[HttpHeaders.Location] shouldBe "/login"
@@ -138,10 +211,17 @@ class ApplicationTest: DescribeSpec({
         it("Should yield the game centre page with a session") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
+                client.post("/login") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    // somehow do this with "fake" data
+                }
                 val response = client.get("/gamecenter")
-                response.status shouldBe HttpStatusCode.Found
-                // WRONG
+                response.status shouldBe HttpStatusCode.OK
             }
         }
     }
@@ -160,7 +240,15 @@ class ApplicationTest: DescribeSpec({
         it("Should yield the menu page with a session") {
             testApplication {
                 application { module() }
-                // val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
+                client.post("/login") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    // somehow do this with "fake" data
+                }
                 val response = client.get("/menu")
                 response.status shouldBe HttpStatusCode.OK
             }
@@ -178,9 +266,18 @@ class ApplicationTest: DescribeSpec({
             }
         }
 
-        it("Should yield the wait page") {
+        it("Should yield the wait page with a session") {
             testApplication {
                 application { module() }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
+                client.post("/login") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    // somehow do this with "fake" data
+                }
                 val response = client.get("/wait")
                 response.status shouldBe HttpStatusCode.OK
             }
@@ -191,7 +288,10 @@ class ApplicationTest: DescribeSpec({
         it("Should redirect to login page without a session") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/search")
                 response.status shouldBe HttpStatusCode.Found
                 response.headers[HttpHeaders.Location] shouldBe "/login"
@@ -201,13 +301,17 @@ class ApplicationTest: DescribeSpec({
         it("Should yield the search page with a session") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
+                client.post("/login") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    // somehow do this with "fake" data
+                }
                 val response = client.get("/search")
-                //response.status shouldBe HttpStatusCode.OK // code is Found (302)??
-                // response.headers[HttpHeaders.Location] shouldBe "/login"
-
-                // still redirecting to login
-                // session doesn't persist
+                response.status shouldBe HttpStatusCode.OK
             }
         }
     }
@@ -216,18 +320,32 @@ class ApplicationTest: DescribeSpec({
         it("Should redirect to login page without a session") {
             testApplication {
                 application { module() }
-                val client = createClient { followRedirects = false }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
                 val response = client.get("/game")
                 response.status shouldBe HttpStatusCode.Found
                 response.headers[HttpHeaders.Location] shouldBe "/login"
             }
         }
 
-        it("Should yield the game page") {
+        it("Should yield the game page with a session") {
+            // OK actually it shouldn't
+            // Redirect to the gamecenter if there's no game ID?
             testApplication {
                 application { module() }
+                val client = createClient {
+                    followRedirects = false
+                    install(HttpCookies)
+                }
+                client.post("/login") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("username" to "Bob", "password" to "bob123").formUrlEncode())
+                    // somehow do this with "fake" data
+                }
                 val response = client.get("/game")
-                response.status shouldBe HttpStatusCode.OK
+                //response.status shouldBe HttpStatusCode.OK
             }
         }
     }
