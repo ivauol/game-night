@@ -1,7 +1,11 @@
+import com.github.gradle.node.npm.task.NpmInstallTask
+import com.github.gradle.node.npm.task.NpmTask
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     kotlin("plugin.serialization") version "1.9.10"
+    id("com.github.node-gradle.node") version "7.0.2"
 }
 
 group = "com.example"
@@ -15,12 +19,23 @@ kotlin {
     jvmToolchain(21)
 }
 
+node {
+    download.set(true)
+    version.set("20.11.1")
+    npmVersion.set("10.2.4")
+}
+
 repositories {
     mavenCentral()
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.register<NpmTask>("jsTest") {
+    workingDir.set(file("src/test/js"))
+    args.set(listOf("run", "test"))
 }
 
 dependencies {
