@@ -5,6 +5,12 @@ import io.kotest.matchers.shouldBe
 
 class HashTest : DescribeSpec ({
 
+    /**
+     * Since our Hasher class implements a salted hash,
+     * Hashing the same string twice should still compute different results.
+     * The only way to check if the passwords match is through our verifyPassword().
+     */
+
     describe("hashPassword()") {
         it("should output a different string to the original input") {
             val examplePass = "example"

@@ -18,9 +18,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 import io.ktor.server.application.*
 import io.ktor.server.websocket.*
-import io.ktor.websocket.*
 import io.ktor.server.sessions.*
-import io.ktor.util.*
 import java.security.SecureRandom
 
 import io.ktor.client.plugins.cookies.*
@@ -28,8 +26,13 @@ import io.ktor.client.plugins.cookies.*
 @Suppress("unused")
 class ApplicationTest: DescribeSpec({
 
+    /**
+     * Set up a database with example data for testing.
+     * Before every test we clear and populate the database with the user/game data.
+     * We then run this through our test application setup.
+     */
+
     fun testDb() {
-        // use this for tests instead of original database?
         Database.connect("jdbc:sqlite:./src/test/resources/data/testusers.db", driver = "org.sqlite.JDBC")
 
         transaction {
@@ -60,9 +63,14 @@ class ApplicationTest: DescribeSpec({
                 it[end_time] = null
                 it[status] = "active"
                 it[winner_id] = null
-        }
+            }
         }
     }
+
+    /**
+     * Set up a test module for running each test.
+     * testModule() is essentially the same as the original except we link to a testDb() instead.
+     */
 
     fun Application.testModule(){
         install(WebSockets){}
@@ -97,7 +105,6 @@ class ApplicationTest: DescribeSpec({
 
     describe("/login") {
         it("Should yield the login page") {
-            // check for if logged in already?
             testApplication {
                 application { testModule() }
                 val client = createClient {
@@ -119,7 +126,6 @@ class ApplicationTest: DescribeSpec({
                 val response = client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
                     setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
-                    // somehow do this with "fake" data
                 }
                 response.status shouldBe HttpStatusCode.Found
                 response.headers[HttpHeaders.Location] shouldBe "/gamecenter"
@@ -145,7 +151,6 @@ class ApplicationTest: DescribeSpec({
     }
 
     describe("/register") {
-        // check for if logged in already?
         it("Should yield the register page") {
             testApplication {
                 application { testModule() }
@@ -161,7 +166,6 @@ class ApplicationTest: DescribeSpec({
         it("Register attempt with non preexisting user") {
             testApplication {
                 application { testModule() }
-                testDb()
                 val client = createClient {
                     followRedirects = false
                     install(HttpCookies)
@@ -216,7 +220,6 @@ class ApplicationTest: DescribeSpec({
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
                     setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
-                    // somehow do this with "fake" data
                 }
                 val response = client.get("/stats")
                 response.status shouldBe HttpStatusCode.OK
@@ -263,7 +266,6 @@ class ApplicationTest: DescribeSpec({
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
                     setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
-                    // somehow do this with "fake" data
                 }
                 val response = client.get("/gamecenter")
                 response.status shouldBe HttpStatusCode.OK
@@ -326,7 +328,6 @@ class ApplicationTest: DescribeSpec({
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
                     setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
-                    // somehow do this with "fake" data
                 }
                 val response = client.get("/wait")
                 response.status shouldBe HttpStatusCode.OK
@@ -358,7 +359,6 @@ class ApplicationTest: DescribeSpec({
                 client.post("/login") {
                     header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
                     setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
-                    // somehow do this with "fake" data
                 }
                 val response = client.get("/search")
                 response.status shouldBe HttpStatusCode.OK
@@ -381,8 +381,6 @@ class ApplicationTest: DescribeSpec({
         }
 
         it("Should yield the game page with a session") {
-            // OK actually it shouldn't
-            // Redirect to the gamecenter if there's no game ID?
             testApplication {
                 application { testModule() }
                 val client = createClient {
@@ -394,7 +392,7 @@ class ApplicationTest: DescribeSpec({
                     setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
                 }
                 val response = client.get("/game?gameId=1")
-                //response.status shouldBe HttpStatusCode.OK
+                response.status shouldBe HttpStatusCode.OK
             }
         }
     }
