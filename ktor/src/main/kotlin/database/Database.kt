@@ -4,12 +4,11 @@ import io.ktor.server.application.*
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
 
 private const val URL = "jdbc:sqlite:./src/main/resources/data/checkers.db"
 private const val DRIVER = "org.sqlite.JDBC"
@@ -20,11 +19,11 @@ fun Application.configureDatabase() {
     Database.connect(URL, driver = DRIVER)
 
     transaction {
-        if (!db.exists()){
+        if (!db.exists()) {
             addLogger(StdOutSqlLogger)
-            //create the tables
+            // create the tables
             SchemaUtils.create(Users, Games)
-            //insert all users into exposed database
+            // insert all users into exposed database
             hydrateUsers("src/main/resources/data/users.csv").forEach { record ->
                 Users.insert {
                     it[username] = record.username
@@ -32,7 +31,7 @@ fun Application.configureDatabase() {
                     it[email] = record.email
                 }
             }
-            //insert all games into exposed database
+            // insert all games into exposed database
             hydrateGames("src/main/resources/data/games.csv").forEach { record ->
                 Games.insert {
                     it[white_id] = record.white_id
@@ -50,14 +49,14 @@ fun Application.configureDatabase() {
     }
 }
 
-//users table
+// users table
 object Users : IntIdTable() {
     val username = varchar("username", 32).uniqueIndex()
     val password = varchar("password", 128)
     val email = varchar("email", 50).uniqueIndex()
 }
 
-//games table
+// games table
 object Games : IntIdTable() {
     val black_id = integer("black_id")
     val white_id = integer("white_id")

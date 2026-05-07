@@ -1,4 +1,3 @@
-import com.github.gradle.node.npm.task.NpmInstallTask
 import com.github.gradle.node.npm.task.NpmTask
 
 plugins {
@@ -6,6 +5,7 @@ plugins {
     alias(libs.plugins.ktor)
     kotlin("plugin.serialization") version "1.9.10"
     id("com.github.node-gradle.node") version "7.0.2"
+    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
 }
 
 group = "com.example"
