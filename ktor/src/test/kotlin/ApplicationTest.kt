@@ -40,13 +40,13 @@ class ApplicationTest: DescribeSpec({
             Users.deleteAll()
             Users.insert {
                 it[id] = 1
-                it[username] = "Eve"
+                it[username] = "eve"
                 it[email] = "eve@example.com"
                 it[password] = Hasher.hashPassword("eve123")
             }
             Users.insert {
                 it[id] = 2
-                it[username] = "Frank"
+                it[username] = "frank"
                 it[email] = "frank@example.com"
                 it[password] = Hasher.hashPassword("frank123")
             }
