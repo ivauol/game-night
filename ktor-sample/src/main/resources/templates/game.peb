@@ -314,6 +314,15 @@
             .label {
                 font-size: 12px;
             }
+
+            .popup {
+                max-width: 90%;
+                max-height: 800px;
+            }
+
+            .popuptext {
+                font-size: 15px;
+            }
         }
 
     </style>
