@@ -204,6 +204,38 @@ class ApplicationTest :
             }
         }
 
+        describe("/chess") {
+            it("Should redirect to login page without a session") {
+                testApplication {
+                    application { testModule() }
+                    val client =
+                        createClient {
+                            followRedirects = false
+                            install(HttpCookies)
+                        }
+                    val response = client.get("/chess")
+                    response.status shouldBe HttpStatusCode.Found
+                    response.headers[HttpHeaders.Location] shouldBe "/login"
+                }
+            }
+            it("Should yield the chess page with a session") {
+                testApplication {
+                    application { testModule() }
+                    val client =
+                        createClient {
+                            followRedirects = false
+                            install(HttpCookies)
+                        }
+                    client.post("/login") {
+                        header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                        setBody(listOf("username" to "Eve", "password" to "eve123").formUrlEncode())
+                    }
+                    val response = client.get("/chess")
+                    response.status shouldBe HttpStatusCode.OK
+                }
+            }
+        }
+
         describe("/stats") {
             it("Should redirect to login page without a session") {
                 testApplication {

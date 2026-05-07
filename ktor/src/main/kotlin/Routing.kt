@@ -270,6 +270,7 @@ fun Application.configureRouting() {
         }
 
         get("/chess") {
+            val session = call.sessions.get<PlayerSession>() ?: return@get call.respondRedirect("/login")
             call.respondTemplate("chess.peb", mapOf())
         }
 
