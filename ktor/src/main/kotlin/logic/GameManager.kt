@@ -1,9 +1,7 @@
 package com.example
 
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class GameManager {
@@ -82,20 +80,20 @@ class GameManager {
 
         val winner = game.winCheck(game.current)
         var status = "active"
-        var winner_id: Int? = null
-        var win_time: Long? = null
+        var winnerID: Int? = null
+        var winTime: Long? = null
         if (winner != "") {
             status = "ended"
-            win_time = System.currentTimeMillis()
+            winTime = System.currentTimeMillis()
             if (winner == "black") {
-                winner_id =
+                winnerID =
                     transaction {
                         // val query = Games.selectAll().first{it[Games.id] == game_id}
                         val query = Games.selectAll().where { Games.id eq game_id }.first()
                         query[Games.black_id]
                     }
             } else {
-                winner_id =
+                winnerID =
                     transaction {
                         // val query = Games.selectAll().first{it[Games.id] == game_id}
                         val query = Games.selectAll().where { Games.id eq game_id }.first()
@@ -110,8 +108,8 @@ class GameManager {
                 it[Games.history] = history
                 it[Games.current] = game.current
                 it[Games.status] = status
-                it[Games.winner_id] = winner_id
-                it[Games.end_time] = win_time
+                it[Games.winner_id] = winnerID
+                it[Games.end_time] = winTime
             }
         }
     }

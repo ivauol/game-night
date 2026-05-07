@@ -3,7 +3,7 @@ package com.example
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 
-class HashTest :
+class HasherTest :
     DescribeSpec({
 
         /**

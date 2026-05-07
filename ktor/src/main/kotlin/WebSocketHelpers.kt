@@ -1,4 +1,3 @@
-import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 
@@ -38,7 +37,7 @@ object WSConnections {
 }
 
 // queue designed for matchmaking
-object matchmakingQueue {
+object MatchmakingQueue {
     private val players = mutableListOf<Int>()
     val sessions = mutableMapOf<Int, DefaultWebSocketServerSession>()
 

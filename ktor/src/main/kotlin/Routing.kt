@@ -10,14 +10,11 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.server.util.getOrFail
 import io.ktor.server.websocket.*
-import io.ktor.util.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.*
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -386,11 +383,11 @@ fun Application.configureRouting() {
             if (playerId == 0) {
                 return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Not logged in"))
             }
-            matchmakingQueue.sessions[playerId] = this
+            MatchmakingQueue.sessions[playerId] = this
 
             try {
                 while (true) {
-                    val opponentId = matchmakingQueue.match(playerId)
+                    val opponentId = MatchmakingQueue.match(playerId)
 
                     if (opponentId != null) {
                         // if opponent found, add new game to database
@@ -408,15 +405,15 @@ fun Application.configureRouting() {
                             }
 
                         // send the new game id to both players
-                        matchmakingQueue.notify(playerId, "$gameId")
-                        matchmakingQueue.notify(opponentId, "$gameId")
+                        MatchmakingQueue.notify(playerId, "$gameId")
+                        MatchmakingQueue.notify(opponentId, "$gameId")
 
                         break
                     }
                     delay(500)
                 }
             } finally {
-                matchmakingQueue.remove(playerId)
+                MatchmakingQueue.remove(playerId)
             }
         }
     }
