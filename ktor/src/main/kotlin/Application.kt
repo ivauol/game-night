@@ -13,6 +13,12 @@ fun main(args: Array<String>) {
         .main(args)
 }
 
+/**
+ * In Application.kt we set up the module that is used for the project
+ * and configure everything else we need.
+ * We chose to use sessions and cookies to store user info
+ */
+
 fun Application.module() {
     install(WebSockets) {}
     install(Sessions) {
