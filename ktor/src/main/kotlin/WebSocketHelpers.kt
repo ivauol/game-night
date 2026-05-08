@@ -1,5 +1,5 @@
-import io.ktor.server.websocket.*
-import io.ktor.websocket.*
+import io.ktor.server.websocket.DefaultWebSocketServerSession
+import io.ktor.websocket.Frame
 
 // store all online players for syncing
 object WSConnections {

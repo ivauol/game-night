@@ -1,6 +1,6 @@
 package com.example
 
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils

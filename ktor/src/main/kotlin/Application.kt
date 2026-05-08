@@ -1,10 +1,11 @@
 package com.example
 
-import io.ktor.server.application.*
-import io.ktor.server.sessions.*
-import io.ktor.server.websocket.*
-import io.ktor.util.*
-import io.ktor.websocket.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.sessions.Sessions
+import io.ktor.server.sessions.cookie
+import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
+import io.ktor.server.websocket.WebSockets
 import java.security.SecureRandom
 
 fun main(args: Array<String>) {
