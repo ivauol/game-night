@@ -34,6 +34,11 @@ data class PlayerSession(
     val playerId: Int,
 )
 
+// Defining constants
+
+const val MIN_PASS_LENGTH = 6
+const val PERCENT_MULT = 100
+
 // Configuring all the routes we use throughout
 
 fun Application.configureRouting() {
@@ -113,7 +118,7 @@ fun Application.configureRouting() {
             if (givenEmail.trim() == "" || givenUsername.trim() == "" || givenPass.trim() == "") {
                 return@post call.respondRedirect("/register?message=Please%20fill%20all%20fields.")
             }
-            if (givenPass.length < 6) {
+            if (givenPass.length < MIN_PASS_LENGTH) {
                 return@post call.respondRedirect("/register?message=Password%20not%20long%20enough.")
             }
 
@@ -202,7 +207,7 @@ fun Application.configureRouting() {
                     "email" to email,
                     "totalGames" to totalGames,
                     "activeGames" to activeGames,
-                    "winRate" to "%.2f%%".format(winRate * 100),
+                    "winRate" to "%.2f%%".format(winRate * PERCENT_MULT),
                 ) as Map<String, Any>,
             )
         }
@@ -379,7 +384,11 @@ fun Application.configureRouting() {
 
             // reload the board if a success
             if (response.success) {
-                val game = gameManager.createGame(gameId, playerId) ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val game =
+                    gameManager.createGame(
+                        gameId,
+                        playerId,
+                    ) ?: return@post call.respond(HttpStatusCode.BadRequest)
                 val message = "${game.boardState},${response.winner},${game.current}"
                 WSConnections.broadcast(gameId, message)
                 call.respond(HttpStatusCode.OK)
@@ -393,18 +402,38 @@ fun Application.configureRouting() {
             // get game and player id
             val session =
                 call.sessions.get<PlayerSession>()
-                    ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "No session"))
+                    ?: return@webSocket close(
+                        CloseReason(
+                            CloseReason.Codes.CANNOT_ACCEPT,
+                            "No session",
+                        ),
+                    )
 
             val playerId = session.playerId
             if (playerId == 0) {
-                return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Not logged in"))
+                return@webSocket close(
+                    CloseReason(
+                        CloseReason.Codes.CANNOT_ACCEPT,
+                        "Not logged in",
+                    ),
+                )
             }
             val gameId =
                 call.request.queryParameters["gameId"]?.toIntOrNull()
-                    ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "No gameId"))
+                    ?: return@webSocket close(
+                        CloseReason(
+                            CloseReason.Codes.CANNOT_ACCEPT,
+                            "No gameId",
+                        ),
+                    )
             val game =
                 gameManager.createGame(gameId, playerId)
-                    ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Player not in game"))
+                    ?: return@webSocket close(
+                        CloseReason(
+                            CloseReason.Codes.CANNOT_ACCEPT,
+                            "Player not in game",
+                        ),
+                    )
 
             println("Player $playerId connected to game $gameId")
             WSConnections.add(gameId, this)

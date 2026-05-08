@@ -150,7 +150,12 @@ class ApplicationTest :
                     val response =
                         client.post("/login") {
                             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                            setBody(listOf("username" to "Mallory", "password" to "mallory123").formUrlEncode())
+                            setBody(
+                                listOf(
+                                    "username" to "Mallory",
+                                    "password" to "mallory123",
+                                ).formUrlEncode(),
+                            )
                         }
                     response.status shouldBe HttpStatusCode.Found
                     response.headers[HttpHeaders.Location] shouldBe "/login?message=Invalid%20user"
@@ -183,7 +188,13 @@ class ApplicationTest :
                     val response =
                         client.post("/register") {
                             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                            setBody(listOf("username" to "Fake", "email" to "fake@example.com", "password" to "fake123").formUrlEncode())
+                            setBody(
+                                listOf(
+                                    "username" to "Fake",
+                                    "email" to "fake@example.com",
+                                    "password" to "fake123",
+                                ).formUrlEncode(),
+                            )
                         }
                     response.status shouldBe HttpStatusCode.Found
                     response.headers[HttpHeaders.Location] shouldBe "/gamecenter"
@@ -201,7 +212,13 @@ class ApplicationTest :
                     val response =
                         client.post("/register") {
                             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                            setBody(listOf("username" to "Eve", "email" to "eve@example.com", "password" to "eve123").formUrlEncode())
+                            setBody(
+                                listOf(
+                                    "username" to "Eve",
+                                    "email" to "eve@example.com",
+                                    "password" to "eve123",
+                                ).formUrlEncode(),
+                            )
                         }
                     response.status shouldBe HttpStatusCode.Found
                     response.headers[HttpHeaders.Location] shouldBe "/register?message=User%20exists."
