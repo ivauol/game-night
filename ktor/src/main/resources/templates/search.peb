@@ -24,6 +24,8 @@
             left: 5%;
             z-index: 0;
         }
+
+        {# Icon-bar design implemtation #}
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -183,6 +185,7 @@
     </div>
     <div class="glow"></div>
 
+    {# Locating the active/ended games the player is in #}
     <div class="flex-container">
         <div class= "form-container">
             <ul>

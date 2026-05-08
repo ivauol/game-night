@@ -20,6 +20,21 @@
             overflow: hidden;
         }
 
+
+        h1 {
+            font-size: 5rem;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 25px rgba(0,0,0,0.35);
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+        }
+
+        {# Icon-bar design implemtation #}
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -49,18 +64,6 @@
             padding: 20px;
         }
 
-        h1 {
-            font-size: 5rem;
-            letter-spacing: 3px;
-            margin-bottom: 15px;
-            text-shadow: 0 4px 25px rgba(0,0,0,0.35);
-        }
-
-        p {
-            font-size: 1.2rem;
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 40px;
-        }
 
         .button-group {
             display: flex;

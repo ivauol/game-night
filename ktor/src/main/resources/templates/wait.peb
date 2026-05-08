@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> game menu </title>
+    <title> Creating a match </title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
         body {
@@ -23,6 +23,8 @@
             left: 5%;
             z-index: 0;
         }
+
+        {# Icon-bar design implemtation #}
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -127,6 +129,7 @@
 
     <div class="glow"></div>
 
+    {# Matching to an available player #}
     <div class="flex-container">
         <h2>Waiting for an opponent...</h2>
         <script>
