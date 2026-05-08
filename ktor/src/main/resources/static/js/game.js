@@ -80,7 +80,7 @@ function currentPlayer() {
         turn.innerText = "It is your turn";
     }
     else{
-        turn.innerText = "It is opponent's turn";
+        turn.innerText = "It is the opponent's turn";
     }
 }
 
@@ -88,18 +88,13 @@ function currentPlayer() {
 function winCheck(winner) {
     if (winner !== "") {
 
-        const winnerDiv = document.createElement("div");
-        winnerDiv.className = "win-message";
-        winnerDiv.style.textAlign = "center";
-        winnerDiv.style.fontSize = "24px";
-        winnerDiv.style.marginTop = "20px";
+        let winnerName = document.getElementById("winner")
         if (winner == "draw"){
-            winnerDiv.innerText = "Draw!";
+            winnerName.innerText = "Draw!";
         }
-        else{
-            winnerDiv.innerText = winner + " wins!";
+        else {
+            winnerName.innerText = winner + " wins!";
         }
-        document.body.appendChild(winnerDiv);
 
         return winner;
     }
