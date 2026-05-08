@@ -385,14 +385,14 @@
         <div class="container">
             <div class="card">
                 {% if blackId == playerId %}
-                    <p style="text-align:center; font-size: 18px;">You are the <strong>black</strong> checkers</p>
+                    <p style="text-align:center; font-size: 22px;">You are the <strong>black</strong> checkers</p>
                 {% else %}
-                    <p style="text-align:center;">You are the <strong>white</strong> checkers</p>
+                    <p style="text-align:center; font-size: 22px;">You are the <strong>white</strong> checkers</p>
                 {% endif %}
                 <p id="turn" style="text-align:center"></p>
 
-                <p id="errorBox" style="text-align:center"></p>
-                <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
+                <p id="errorBox" style="text-align:center; color:red;"></p>
+                <p id="movePreview" style="text-align:center; margin-top:10px; color:red;" ></p>
 
                 <div style="text-align:center; margin-top:10px;">
                     <button type="button" id="submitMoveBtn" style="font-size:18px">Submit Move</button>
@@ -404,7 +404,9 @@
                 <p style= "font-size: 20px; text-align: center">
                     1. Select the <em> checker </em> you want to move <br><br>
                     2. Select the <em> square </em> you want to move to <br><br>
-                    3. Submit the move!
+                    3. Submit the move! <br><br><br>
+
+                    YOU <strong>MUST</strong> MAKE A CAPTURE IF YOU CAN
                 </p>
 
             </div>
