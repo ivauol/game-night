@@ -92,6 +92,9 @@ fun Application.configureRouting() {
             if (givenEmail.trim() == "" || givenUsername.trim() == "" || givenPass.trim() == "") {
                 return@post call.respondRedirect("/register?message=Please%20fill%20all%20fields.")
             }
+            if (givenPass.length < 8){
+                return@post call.respondRedirect("/register?message=Password%20not%20long%20enough.")
+            }
 
             var userExists = false
             var userId : EntityID<Int>? = null
