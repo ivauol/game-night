@@ -1,4 +1,4 @@
-# ktor-sample
+# ktor
 
 This project was created using the [Ktor Project Generator](https://start.ktor.io).
 
@@ -21,7 +21,7 @@ Here's a list of features included in this project:
 To build or run the project, use one of the following tasks:
 
 | Task                                    | Description                                                          |
-| -----------------------------------------|---------------------------------------------------------------------- |
+| ----------------------------------------|----------------------------------------------------------------------|
 | `./gradlew test`                        | Run the tests                                                        |
 | `./gradlew build`                       | Build everything                                                     |
 | `./gradlew buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
@@ -29,6 +29,9 @@ To build or run the project, use one of the following tasks:
 | `./gradlew publishImageToLocalRegistry` | Publish the docker image locally                                     |
 | `./gradlew run`                         | Run the server                                                       |
 | `./gradlew runDocker`                   | Run using the local docker image                                     |
+
+In order to run the JavaScript tests, first build using gradle, then run npm install in src/test/js.
+After that, you can run ./gradlew jsTest to run it.
 
 If the server starts successfully, you'll see the following output:
 
