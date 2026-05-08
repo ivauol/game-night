@@ -28,6 +28,7 @@
             z-index: 0;
         }
 
+        {# Icon-bar design implementation #}
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -45,6 +46,7 @@
             font-size: 28px;
         }
 
+        {# Checkers game design implementation #}
         .game-panel {
             max-width: 900px;
             margin: 0 auto;
@@ -256,7 +258,7 @@
             user-select: none;
         }   
 
-        {# The actual pop-up #}
+        {# The actual pop-up for game instructions #}
         .popup .popuptext {
             visibility: hidden;
             min-width: 400px;
@@ -296,6 +298,60 @@
             background: rgba(139,92,246,0.15);
         }
 
+        {# Making the page responsive to smaller screens #}
+        @media (max-width: 900px) {
+
+            .flex-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .container {
+                width: 95%;
+            }
+
+            .form-container {
+                width: 100%;
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .label {
+                font-size: 12px;
+            }
+
+            .popup {
+                max-width: 90%;
+                max-height: 800px;
+            }
+
+            .popuptext {
+                font-size: 15px;
+            }
+
+            .square {
+                width: 40px;
+                height: 40px;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            .piece {
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                margin: auto;
+                margin-top: 8px;
+                box-shadow: inset 0 2px 4px rgba(255,255,255,0.4),
+                            inset 0 -2px 4px rgba(0,0,0,0.3),
+                            0 2px 4px rgba(0,0,0,0.3);
+            }
+        }
+
+
     </style>
 </head>
 <body>
@@ -318,7 +374,7 @@
     </div>
 
 
-    {#display black's id#}
+    {# Game implementation #}
 
     <div class="flex-container">
         <div class="form-container" >
@@ -370,7 +426,8 @@
                 <p style= "font-size: 20px; text-align: center">
                     1. Select the <em> checker </em> you want to move <br><br>
                     2. Select the <em> square </em> you want to move to <br><br>
-                    3. Submit the move!
+                    3. Submit the move! <br><br><br>
+                    YOU <strong>MUST</strong> MAKE A CAPTURE IF YOU CAN
                 </p>
 
             </div>
