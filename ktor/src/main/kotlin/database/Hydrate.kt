@@ -4,7 +4,7 @@ import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.rows
 import org.jetbrains.kotlinx.dataframe.io.readCsv
 
-//game layout
+// game layout
 data class GameRecord(
     val black_id: Int,
     val white_id: Int,
@@ -14,53 +14,57 @@ data class GameRecord(
     val start_time: Long,
     val end_time: Long?,
     val status: String,
-    val winner_id: Int?
+    val winner_id: Int?,
 )
 
-//user layout
+// user layout
 data class UserRecord(
     val username: String,
     val password: String,
-    val email: String
+    val email: String,
 )
 
-//convert cell value to a proper string
+// convert cell value to a proper string
 fun Any?.parseCell(): String? = this?.toString()?.trim()?.takeIf { it.isNotEmpty() }
 
-//get all games from the CSV
+// get all games from the CSV
 fun hydrateGames(filePath: String): List<GameRecord> {
     val df = DataFrame.readCsv(filePath)
-    //get all the existing games
-    val grouped = df.rows()
-        .map { row ->
-            GameRecord(
-                black_id = row["black_id"].parseCell()!!.toInt(),
-                white_id = row["white_id"].parseCell()!!.toInt(),
-                board = row["board"].parseCell()!!,
-                history = row["history"].parseCell()!!,
-                current = row["current"].parseCell()!!,
-                start_time = row["start_time"].parseCell()!!.toLong(),
-                end_time = row["end_time"].parseCell()?.toLong(),
-                status = row["status"].parseCell()!!,
-                winner_id = row["winner_id"].parseCell()?.toInt()
+    // get all the existing games
+    val grouped =
+        df
+            .rows()
+            .map { row ->
+                GameRecord(
+                    black_id = row["black_id"].parseCell()!!.toInt(),
+                    white_id = row["white_id"].parseCell()!!.toInt(),
+                    board = row["board"].parseCell()!!,
+                    history = row["history"].parseCell()!!,
+                    current = row["current"].parseCell()!!,
+                    start_time = row["start_time"].parseCell()!!.toLong(),
+                    end_time = row["end_time"].parseCell()?.toLong(),
+                    status = row["status"].parseCell()!!,
+                    winner_id = row["winner_id"].parseCell()?.toInt(),
                 )
-        }
+            }
 
     return grouped
 }
 
-//get all users from the CSV
+// get all users from the CSV
 fun hydrateUsers(filePath: String): List<UserRecord> {
     val df = DataFrame.readCsv(filePath)
-    //get all existing users
-    val grouped = df.rows()
-        .map { row ->
-            UserRecord(
-                username = row["username"].parseCell()!!,
-                password = Hasher.hashPassword(row["password"].parseCell()!!),
-                email = row["email"].parseCell()!!,
+    // get all existing users
+    val grouped =
+        df
+            .rows()
+            .map { row ->
+                UserRecord(
+                    username = row["username"].parseCell()!!,
+                    password = Hasher.hashPassword(row["password"].parseCell()!!),
+                    email = row["email"].parseCell()!!,
                 )
-        }
+            }
 
     return grouped
 }
