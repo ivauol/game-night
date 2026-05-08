@@ -34,6 +34,13 @@ data class PlayerSession(
     val playerId: Int,
 )
 
+// Defining constants
+
+const val MIN_PASS_LENGTH = 6
+const val PERCENT_MULT = 100
+
+// Configuring all the routes we use throughout
+
 fun Application.configureRouting() {
     val gameManager = GameManager()
 
@@ -50,6 +57,7 @@ fun Application.configureRouting() {
         }
 
         get("/login") {
+            // The message is only displayed when login is invalid
             val message = call.request.queryParameters["message"] ?: ""
             call.respondTemplate("login.peb", mapOf("message" to message))
         }
@@ -75,6 +83,7 @@ fun Application.configureRouting() {
                         }
             }
 
+            // Checking for valid user, pass, etc. If anything fails we redirect with a message.
             if (user == null) {
                 return@post call.respondRedirect("/login?message=Invalid%20user")
             }
@@ -87,7 +96,14 @@ fun Application.configureRouting() {
             return@post call.respondRedirect("/gamecenter")
         }
 
+        /**
+         * After the user has logged in (or registered) they'll have access to the rest of the site.
+         * For the majority of the remaining routes we check for a session
+         * And redirect to login if one isn't found.
+         */
+
         get("/register") {
+            // The message is only displayed when registration is invalid
             val message = call.request.queryParameters["message"] ?: ""
             call.respondTemplate("register.peb", mapOf("message" to message))
         }
@@ -98,16 +114,18 @@ fun Application.configureRouting() {
             val givenUsername = params.getOrFail("username").lowercase()
             val givenPass = params.getOrFail("password")
 
+            // Checking for any empty fields/invalid pass length
             if (givenEmail.trim() == "" || givenUsername.trim() == "" || givenPass.trim() == "") {
                 return@post call.respondRedirect("/register?message=Please%20fill%20all%20fields.")
             }
-            if (givenPass.length < 8){
+            if (givenPass.length < MIN_PASS_LENGTH) {
                 return@post call.respondRedirect("/register?message=Password%20not%20long%20enough.")
             }
 
             var userExists = false
             var userId: EntityID<Int>? = null
 
+            // Entering new user info into the database
             transaction {
                 val user = Users.selectAll().where { Users.username eq givenUsername }.singleOrNull()
 
@@ -131,6 +149,10 @@ fun Application.configureRouting() {
             return@post call.respondRedirect("/gamecenter")
         }
 
+        /**
+         * Profile page with user info
+         * Displays stats from the Users/Games databases
+         */
         get("/stats") {
             val session =
                 call.sessions.get<PlayerSession>()
@@ -153,7 +175,8 @@ fun Application.configureRouting() {
 
             val (totalGames, activeGames, wonGames) =
                 transaction {
-                    var userGames = Games.selectAll().where { (Games.black_id eq playerId) or (Games.white_id eq playerId) }
+                    var userGames =
+                        Games.selectAll().where { (Games.black_id eq playerId) or (Games.white_id eq playerId) }
 
                     var total = 0
                     var active = 0
@@ -184,16 +207,18 @@ fun Application.configureRouting() {
                     "email" to email,
                     "totalGames" to totalGames,
                     "activeGames" to activeGames,
-                    "winRate" to "%.2f%%".format(winRate * 100),
+                    "winRate" to "%.2f%%".format(winRate * PERCENT_MULT),
                 ) as Map<String, Any>,
             )
         }
 
+        // Clearing player session and back to main menu
         get("/logout") {
             call.sessions.clear<PlayerSession>()
             call.respondRedirect("/welcome")
         }
 
+        // shows the games available for play
         get("/gamecenter") {
             val session = call.sessions.get<PlayerSession>() ?: return@get call.respondRedirect("/login")
             call.displayGameCenter()
@@ -258,16 +283,16 @@ fun Application.configureRouting() {
                 return@get call.respondRedirect("/login")
             }
 
-            val username = transaction {
-                var userDetails = Users.selectAll().where{Users.id eq playerId}.firstOrNull()
+            val username =
+                transaction {
+                    var userDetails = Users.selectAll().where { Users.id eq playerId }.firstOrNull()
 
-                if (userDetails != null){
-                    userDetails[Users.username]
+                    if (userDetails != null) {
+                        userDetails[Users.username]
+                    } else {
+                        ""
+                    }
                 }
-                else {
-                    ""
-                }
-            }
             val gameId =
                 call.request.queryParameters["gameId"]?.toIntOrNull()
                     ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing gameId")
@@ -293,6 +318,7 @@ fun Application.configureRouting() {
             )
         }
 
+        // Placeholder route for future development
         get("/chess") {
             val session = call.sessions.get<PlayerSession>() ?: return@get call.respondRedirect("/login")
             call.respondTemplate("chess.peb", mapOf())
@@ -358,7 +384,11 @@ fun Application.configureRouting() {
 
             // reload the board if a success
             if (response.success) {
-                val game = gameManager.createGame(gameId, playerId) ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val game =
+                    gameManager.createGame(
+                        gameId,
+                        playerId,
+                    ) ?: return@post call.respond(HttpStatusCode.BadRequest)
                 val message = "${game.boardState},${response.winner},${game.current}"
                 WSConnections.broadcast(gameId, message)
                 call.respond(HttpStatusCode.OK)
@@ -372,18 +402,38 @@ fun Application.configureRouting() {
             // get game and player id
             val session =
                 call.sessions.get<PlayerSession>()
-                    ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "No session"))
+                    ?: return@webSocket close(
+                        CloseReason(
+                            CloseReason.Codes.CANNOT_ACCEPT,
+                            "No session",
+                        ),
+                    )
 
             val playerId = session.playerId
             if (playerId == 0) {
-                return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Not logged in"))
+                return@webSocket close(
+                    CloseReason(
+                        CloseReason.Codes.CANNOT_ACCEPT,
+                        "Not logged in",
+                    ),
+                )
             }
             val gameId =
                 call.request.queryParameters["gameId"]?.toIntOrNull()
-                    ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "No gameId"))
+                    ?: return@webSocket close(
+                        CloseReason(
+                            CloseReason.Codes.CANNOT_ACCEPT,
+                            "No gameId",
+                        ),
+                    )
             val game =
                 gameManager.createGame(gameId, playerId)
-                    ?: return@webSocket close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Player not in game"))
+                    ?: return@webSocket close(
+                        CloseReason(
+                            CloseReason.Codes.CANNOT_ACCEPT,
+                            "Player not in game",
+                        ),
+                    )
 
             println("Player $playerId connected to game $gameId")
             WSConnections.add(gameId, this)
@@ -442,10 +492,6 @@ fun Application.configureRouting() {
             }
         }
     }
-}
-
-private suspend fun ApplicationCall.displayLogIn() {
-    respondTemplate("login.peb", mapOf()) // link to userdatabase
 }
 
 private suspend fun ApplicationCall.displayGameCenter() {
