@@ -101,7 +101,7 @@ fun Application.configureRouting() {
             if (givenEmail.trim() == "" || givenUsername.trim() == "" || givenPass.trim() == "") {
                 return@post call.respondRedirect("/register?message=Please%20fill%20all%20fields.")
             }
-            if (givenPass.length < 8){
+            if (givenPass.length < 8) {
                 return@post call.respondRedirect("/register?message=Password%20not%20long%20enough.")
             }
 
@@ -257,6 +257,17 @@ fun Application.configureRouting() {
             if (playerId == 0) {
                 return@get call.respondRedirect("/login")
             }
+            val username =
+                transaction {
+                    val userDetails = Users.selectAll().where { Users.id eq playerId }.firstOrNull()
+
+                    if (userDetails != null) {
+                        userDetails[Users.username]
+                    } else {
+                        ""
+                    }
+                }
+
             val gameId =
                 call.request.queryParameters["gameId"]?.toIntOrNull()
                     ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing gameId")
@@ -277,6 +288,7 @@ fun Application.configureRouting() {
                     "playerId" to playerId,
                     "current" to game.current,
                     "winner" to game.winCheck(game.current),
+                    "username" to username,
                 ),
             )
         }
