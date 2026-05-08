@@ -3,7 +3,8 @@ package com.example
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.ktor.client.plugins.cookies.*
-import io.ktor.client.request.*
+//import io.ktor.client.request.*
+import io.ktor.client.request.header
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
