@@ -213,6 +213,7 @@ fun Application.configureRouting() {
             call.respondRedirect("/welcome")
         }
 
+        // shows the games available for play
         get("/gamecenter") {
             val session = call.sessions.get<PlayerSession>() ?: return@get call.respondRedirect("/login")
             call.displayGameCenter()
