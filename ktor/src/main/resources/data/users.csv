@@ -2,3 +2,5 @@ user_id,username,password,email
 1,alice,alice123,alice@example.com
 2,bob,bob123,bob@example.com
 3,charlie,charlie123,charlie@example.com
+4,player1,testPassword,player1@example.com
+5,player2,anotherPassword,player2@example.com
