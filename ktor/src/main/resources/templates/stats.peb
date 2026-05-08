@@ -143,15 +143,12 @@
             margin-top: 5px;
         }
 
-
-
     </style>
 </head>
 <body>
     <div class="icon-bar">
         <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
         <div style="float: right;">
-
             {% if login %}
                 <a href="/login" class="btn" style="font-size:16px">Login</a>
                 <a href="/register" class="btn" style="font-size:16px" >Register</a>

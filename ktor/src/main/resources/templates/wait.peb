@@ -105,7 +105,6 @@
             box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
         }
 
-
     </style>
 </head>
 <body>
@@ -152,6 +151,6 @@
             };
         </script>
     </div>
-
+    
 </body>
 </html>
