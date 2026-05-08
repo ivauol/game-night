@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome Page</title>
+    <title>Welcome!</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         * {
@@ -20,6 +20,7 @@
             overflow: hidden;
         }
 
+        {# Icon-bar design implementation #}
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -54,12 +55,6 @@
             letter-spacing: 3px;
             margin-bottom: 15px;
             text-shadow: 0 4px 25px rgba(0,0,0,0.35);
-        }
-
-        p {
-            font-size: 1.2rem;
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 40px;
         }
 
         .button-group {

@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {# Page to display the checkers game itself #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkers Game</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, #0f172a, #1e293b, #312e81);
             color: white;
             overflow-x: hidden;
         }
+
         .glow {
             position: fixed;
             width: 500px;
@@ -24,6 +27,8 @@
             left: 5%;
             z-index: 0;
         }
+
+        {# Icon-bar design implementation #}
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -33,6 +38,7 @@
             position: relative;
             z-index: 2;
         }
+
         .icon-bar a {
             display: inline-block;
             padding: 18px 24px;
@@ -40,7 +46,7 @@
             font-size: 28px;
         }
 
-
+        {# Checkers game design implementation #}
         .game-panel {
             max-width: 900px;
             margin: 0 auto;
@@ -252,7 +258,7 @@
             user-select: none;
         }   
 
-        /* The actual popup */
+        {# The actual pop-up for game instructions #}
         .popup .popuptext {
             visibility: hidden;
             min-width: 400px;
@@ -270,7 +276,7 @@
         }
 
 
-        /* Toggle this class - hide and show the popup */
+        {# Toggle this class - hide and show the popup #}
         .popup .show {
             visibility: visible;
             -webkit-animation: fadeIn 5s;
@@ -292,6 +298,60 @@
             background: rgba(139,92,246,0.15);
         }
 
+        {# Making the page responsive to smaller screens #}
+        @media (max-width: 900px) {
+
+            .flex-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .container {
+                width: 95%;
+            }
+
+            .form-container {
+                width: 100%;
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .label {
+                font-size: 12px;
+            }
+
+            .popup {
+                max-width: 90%;
+                max-height: 800px;
+            }
+
+            .popuptext {
+                font-size: 15px;
+            }
+
+            .square {
+                width: 40px;
+                height: 40px;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            .piece {
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                margin: auto;
+                margin-top: 8px;
+                box-shadow: inset 0 2px 4px rgba(255,255,255,0.4),
+                            inset 0 -2px 4px rgba(0,0,0,0.3),
+                            0 2px 4px rgba(0,0,0,0.3);
+            }
+        }
+
+
     </style>
 </head>
 <body>
@@ -300,26 +360,20 @@
     <div class="icon-bar">
         <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
         
-
+        {# Pass in vars from Routing.kt to display user info mid-game #}
         <div style="float: right;">
-        
-            <b class="username_btn"> {{username}} </b>
 
-            {% if login %}
-                <a href="/login" class="button" style="font-size:16px">Login</a>
-                <a href="/register" class="button" style="font-size:16px" >Register</a>
-            {% else %}
+            <b class="username_btn"> {{username}} </b>
                 <a href="/stats" class="button" style="font-size:16px">Profile</a>
                 
                 <form action="/logout" method="post" style="display:inline;">
                     <button class="button" type="submit" margin-left="2px">Logout</button>
                 </form>
-            {% endif %}
         </div>    
     </div>
 
 
-    {#display black's id#}
+    {# Game implementation #}
 
     <div class="flex-container">
         <div class="form-container" >
@@ -356,6 +410,7 @@
                     <p style="text-align:center;">You are the <strong>white</strong> checkers</p>
                 {% endif %}
                 <p id="turn" style="text-align:center"></p>
+                <p id="winner" style="text-align:center"></p>
 
                 <p id="errorBox" style="text-align:center"></p>
                 <p id="movePreview" style="text-align:center; margin-top:10px;"></p>
@@ -365,12 +420,14 @@
                     <button type="button" id="clearMoveBtn" style="font-size:18px">Clear</button>
                 </div>
             </div>
-            
+
+            {# card displaying how-to-play #}
             <div class= "card ">
                 <p style= "font-size: 20px; text-align: center">
                     1. Select the <em> checker </em> you want to move <br><br>
                     2. Select the <em> square </em> you want to move to <br><br>
-                    3. Submit the move!
+                    3. Submit the move! <br><br><br>
+                    YOU <strong>MUST</strong> MAKE A CAPTURE IF YOU CAN
                 </p>
 
             </div>
@@ -392,7 +449,7 @@
             </div>
 
             <script>
-                // When the user clicks on div, open the popup
+                {# When the user clicks on div, open the popup #}
                 function myFunction() {
                     var popup = document.getElementById("myPopup");
                     popup.classList.toggle("show");

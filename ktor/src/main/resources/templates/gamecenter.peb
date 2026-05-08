@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {# Page to show the games available to play #}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
     <title>Game Center</title>
@@ -32,6 +33,7 @@
             z-index: -1;
         }
 
+        {# Icon-bar design implementation #}
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -161,17 +163,10 @@
     <div class="icon-bar">
         <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
         <div style="float: right;">
-
-            {% if login %}
-                <a href="/login" class="btn" style="font-size:16px">Login</a>
-                <a href="/register" class="btn" style="font-size:16px" >Register</a>
-            {% else %}
-                <a href="/stats" class="btn" style="font-size:16px">Profile</a>
-                
-                <form action="/logout" method="post" style="display:inline;">
-                    <button class="btn" type="submit">Logout</button>
-                </form>
-            {% endif %}
+            <a href="/stats" class="btn" style="font-size:16px">Profile</a>
+            <form action="/logout" method="post" style="display:inline;">
+                <button class="btn" type="submit">Logout</button>
+            </form>
         </div>
     </div>
 
