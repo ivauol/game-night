@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {# Placeholder page for future chess game #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> game menu </title>
+    <title>Chess</title>
     <style>
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, #0f172a, #1e293b, #312e81);
             color: white;
         }
+
         .glow {
             position: fixed;
             width: 500px;
@@ -23,6 +27,7 @@
             left: 5%;
             z-index: 0;
         }
+
         .icon-bar {
             width: 100%;
             background: rgba(255,255,255,0.08);
@@ -32,23 +37,12 @@
             position: relative;
             z-index: 2;
         }
+
         .icon-bar a {
             display: inline-block;
             padding: 18px 24px;
             color: white;
             font-size: 28px;
-        }
-
-        h1 { text-align: center; margin-bottom: 10px; font-size: 2.8rem; }
-
-
-        .label {
-            width: 30px;
-            height: 30px;
-            background: rgba(255,255,255,0.08);
-            color: white;
-            font-weight: bold;
-            text-align: center;
         }
 
         .flex-container {
@@ -59,28 +53,6 @@
             padding: 20px;
         }
 
-        .form-container {
-            width: 100%;
-            max-width: 460px;
-            padding: 40px;
-            border-radius: 24px;
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(14px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-            border: 1px solid rgba(255,255,255,0.08);
-            margin: 3px;
-        } 
-
-        .form-container a{
-            font-size: 30px;
-            
-        }
-
-        .text {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.877);
-            font-size: 20px;
-        }
         button,
         .btn {
             margin-top:6px;
@@ -96,39 +68,31 @@
             cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
-        
-        button:hover,
-        .btn:hover{ 
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 12px 30px rgba(139,92,246,0.45); 
-        }
 
+        button:hover,
+        .btn:hover{
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.45);
+        }
 
     </style>
 </head>
+
 <body>
     <div class="icon-bar">
         <a class="active" href="/gamecenter"><i class="fa fa-home"></i></a>
         <div style="float: right;">
-
-            {% if login %}
-                <a href="/login" class="btn" style="font-size:16px">Login</a>
-                <a href="/register" class="btn" style="font-size:16px" >Register</a>
-            {% else %}
                 <a href="/stats" class="btn" style="font-size:16px">Profile</a>
-                
                 <form action="/logout" method="post" style="display:inline;">
                     <button class="btn" type="submit">Logout</button>
                 </form>
-            {% endif %}
         </div>
-        
     </div>
 
     <div class="glow"></div>
 
     <div class="flex-container">
-        <h2> Game under development...</h2>
+        <h2>Game under development...</h2>
     </div>
 
 </body>
