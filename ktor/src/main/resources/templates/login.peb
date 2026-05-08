@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {# Page for the user to login to their account #}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LOG-IN</title>
+    <title>Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -152,6 +154,7 @@
 <form action="/login" method="POST">
     <div class="flex-container">
         <div class="form-container">
+            {# obtained from Routing.kt, displays error message if login is invalid #}
             {% if message %}
             <p style="color:red">{{ message }}</p>
             {% endif %}
